@@ -23,11 +23,16 @@
     padding:24px; margin-bottom:20px; box-shadow:0 8px 26px rgba(96,72,58,.06);
   }
   label { display:block; font-size:13.5px; font-weight:600; margin:14px 0 6px; color:var(--ink); }
-  input, select, textarea {
+  input[type="text"], input[type="password"], input[type="file"], select, textarea {
     width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
     background:#fff; font-size:14.5px; color:var(--ink); font-family:inherit;
   }
   input:focus, select:focus, textarea:focus { outline:none; border-color:var(--accent); }
+  .check-line {
+    display:flex; align-items:center; gap:8px; margin-top:10px;
+    font-size:13px; color:var(--ink-soft); font-weight:normal; cursor:pointer;
+  }
+  .check-line input { width:16px; height:16px; accent-color:var(--accent); cursor:pointer; }
   .btn {
     width:100%; padding:13px; background:var(--accent); color:#fff; border:none;
     border-radius:999px; font-size:15px; font-weight:600; margin-top:22px; cursor:pointer;
@@ -89,15 +94,19 @@
       </div>
       <label>背后的一句话描述</label>
       <input type="text" id="photoDesc" placeholder="例如：院子里的石榴树又结果了">
-      <label>上传图片文件 (建议压缩至 5MB 以内)</label>
+      <label>选择相机原图或手机照片</label>
       <input type="file" id="photoFile" accept="image/*">
+      <label class="check-line">
+        <input type="checkbox" id="autoCompress" checked>
+        自动优化大图为 2K 超清 (长边 2560px · 90% 画质，15MB 原图秒压至 1MB 左右，加载极快)
+      </label>
     </div>
 
     <!-- 音乐专属字段 -->
     <div id="musicFields" style="display:none">
       <label>歌手 / 副标题说明</label>
       <input type="text" id="musicArtist" value="想放给你听">
-      <label>上传 MP3 音频文件 (建议 15MB 以内)</label>
+      <label>上传 MP3 音频文件 (建议 20MB 以内)</label>
       <input type="file" id="musicFile" accept="audio/*">
     </div>
 
@@ -142,7 +151,6 @@
   pwdInput.value = localStorage.getItem('family_blog_pwd') || '';
   pwdInput.addEventListener('input', () => localStorage.setItem('family_blog_pwd', pwdInput.value));
 
-  // 默认填入当天日期
   const today = new Date().toISOString().slice(0, 10);
   $('postDate').value = today;
   $('photoDate').value = today.slice(0, 7);
@@ -158,6 +166,45 @@
     $('titleLabel').textContent = labels[t];
   }
 
+  // 浏览器端无损感高清缩图（长边最大 2560px，品质 0.90）
+  function compressImage(file, maxSide = 2560, quality = 0.90) {
+    return new Promise((resolve) => {
+      // 如果文件本身小于 1.5MB，无需压缩直接返回原文件
+      if (file.size <= 1.5 * 1024 * 1024) return resolve(file);
+
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        let { width, height } = img;
+        if (width > maxSide || height > maxSide) {
+          if (width >= height) {
+            height = Math.round((height * maxSide) / width);
+            width = maxSide;
+          } else {
+            width = Math.round((width * maxSide) / height);
+            height = maxSide;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (!blob || blob.size >= file.size) return resolve(file);
+          const newName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+          resolve(new File([blob], newName, { type: 'image/jpeg' }));
+        }, 'image/jpeg', quality);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(file);
+      };
+      img.src = url;
+    });
+  }
+
   async function publish() {
     const pwd = pwdInput.value.trim();
     const type = $('type').value;
@@ -165,50 +212,63 @@
     if (!pwd) return alert('请先输入管理密码');
     if (!title) return alert('请填写标题');
 
+    const btn = $('submitBtn');
+    btn.disabled = true;
+
     const formData = new FormData();
     formData.append('type', type);
     formData.append('title', title);
 
     let meta = {};
-    if (type === 'photo') {
-      const file = $('photoFile').files[0];
-      if (!file) return alert('请选择要上传的照片文件');
-      formData.append('file', file);
-      meta = {
-        cat: $('photoCat').value.trim() || '日常',
-        date: $('photoDate').value.trim(),
-        desc: $('photoDesc').value.trim()
-      };
-    } else if (type === 'music') {
-      const file = $('musicFile').files[0];
-      if (!file) return alert('请选择要上传的 MP3 文件');
-      formData.append('file', file);
-      meta = { artist: $('musicArtist').value.trim() || '想放给你听' };
-    } else if (type === 'post') {
-      const rawBody = $('postBody').value.trim();
-      if (!rawBody) return alert('请填写随笔正文');
-      const htmlBody = rawBody.split(/\n+/).map(p => `<p>${p}</p>`).join('');
-      const excerpt = $('postExcerpt').value.trim() || (rawBody.slice(0, 42) + '……');
-      meta = {
-        tag: $('postTag').value.trim() || '随笔',
-        date: $('postDate').value.trim() || today,
-        excerpt,
-        content: htmlBody
-      };
-    } else if (type === 'timeline') {
-      meta = {
-        date: $('tlDate').value.trim() || today.slice(0, 4),
-        text: $('tlText').value.trim()
-      };
-    }
-
-    formData.append('content', JSON.stringify(meta));
-
-    const btn = $('submitBtn');
-    btn.disabled = true;
-    btn.textContent = '正在上传并写入数据库，请稍候...';
-
     try {
+      if (type === 'photo') {
+        let file = $('photoFile').files[0];
+        if (!file) {
+          btn.disabled = false;
+          return alert('请选择要上传的照片文件');
+        }
+        if ($('autoCompress').checked) {
+          btn.textContent = '正在本地生成 2K 高清图...';
+          file = await compressImage(file, 2560, 0.90);
+        }
+        formData.append('file', file);
+        meta = {
+          cat: $('photoCat').value.trim() || '日常',
+          date: $('photoDate').value.trim(),
+          desc: $('photoDesc').value.trim()
+        };
+      } else if (type === 'music') {
+        const file = $('musicFile').files[0];
+        if (!file) {
+          btn.disabled = false;
+          return alert('请选择要上传的 MP3 文件');
+        }
+        formData.append('file', file);
+        meta = { artist: $('musicArtist').value.trim() || '想放给你听' };
+      } else if (type === 'post') {
+        const rawBody = $('postBody').value.trim();
+        if (!rawBody) {
+          btn.disabled = false;
+          return alert('请填写随笔正文');
+        }
+        const htmlBody = rawBody.split(/\n+/).map(p => `<p>${p}</p>`).join('');
+        const excerpt = $('postExcerpt').value.trim() || (rawBody.slice(0, 42) + '……');
+        meta = {
+          tag: $('postTag').value.trim() || '随笔',
+          date: $('postDate').value.trim() || today,
+          excerpt,
+          content: htmlBody
+        };
+      } else if (type === 'timeline') {
+        meta = {
+          date: $('tlDate').value.trim() || today.slice(0, 4),
+          text: $('tlText').value.trim()
+        };
+      }
+
+      formData.append('content', JSON.stringify(meta));
+      btn.textContent = '正在上传并写入数据库，请稍候...';
+
       const res = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'X-Admin-Password': pwd },
