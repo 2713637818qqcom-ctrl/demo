@@ -24,7 +24,7 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
   background:var(--bg);color:var(--ink);line-height:1.75;
   -webkit-font-smoothing:antialiased;
-  padding-bottom:86px; /* 给底部播放器留位置 */
+  padding-bottom:86px;
 }
 img{display:block;max-width:100%}
 button{font-family:inherit;cursor:pointer}
@@ -102,6 +102,429 @@ section[id]{scroll-margin-top:74px}
   background:var(--accent);margin:14px auto 0;opacity:.7;
 }
 .section-head p{color:var(--ink-soft);font-size:14.5px;margin-top:14px}
+
+/* ============ 相册 ============ */
+.filters{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-bottom:30px}
+.chip{
+  padding:7px 18px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;font-size:14px;color:var(--ink-soft);transition:.22s;
+}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(181,101,74,.22)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.photo{
+  position:relative;border-radius:15px;overflow:hidden;cursor:zoom-in;
+  background:#eee6dc;aspect-ratio:4/3;
+  box-shadow:0 4px 16px rgba(96,72,58,.07);
+  transition:box-shadow .35s;
+}
+.photo:hover{box-shadow:0 16px 36px rgba(96,72,58,.2)}
+.photo img{width:100%;height:100%;object-fit:cover;transition:transform .55s cubic-bezier(.2,.7,.3,1)}
+.photo:hover img{transform:scale(1.06)}
+.photo-cap{
+  position:absolute;left:0;right:0;bottom:0;padding:30px 14px 12px;
+  background:linear-gradient(transparent,rgba(30,20,15,.62));
+  color:#fff;font-size:13px;letter-spacing:.5px;
+  opacity:0;transform:translateY(8px);transition:.3s;
+}
+.photo:hover .photo-cap{opacity:1;transform:none}
+@media (hover:none){
+  .photo-cap{opacity:1;transform:none;padding-top:22px}
+}
+
+/* ============ 音乐 ============ */
+.song-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
+.song{
+  display:flex;align-items:center;gap:14px;padding:11px 15px;
+  border-radius:14px;cursor:pointer;transition:.22s;border:1px solid transparent;
+}
+.song:hover{background:var(--card);border-color:var(--line)}
+.song.playing{background:var(--card);border-color:var(--accent-soft);box-shadow:0 8px 22px rgba(181,101,74,.1)}
+.song-no{width:22px;text-align:center;font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.song.playing .song-no{color:var(--accent)}
+.song-cover{
+  width:44px;height:44px;border-radius:11px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(135deg,#f3e2d8,#e4eae1);color:var(--accent);
+  font-family:"Noto Serif SC",serif;font-size:17px;
+}
+.song-meta{flex:1;min-width:0}
+.song-title{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-artist{font-size:12.5px;color:var(--ink-soft)}
+.song-bars{display:none;align-items:flex-end;gap:2.5px;height:14px}
+.song.playing .song-bars{display:flex}
+.song-bars i{display:block;width:3px;background:var(--accent);border-radius:2px;animation:bounce .9s infinite ease-in-out}
+.song-bars i:nth-child(2){animation-delay:.15s}
+.song-bars i:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,100%{height:4px}50%{height:14px}}
+
+/* ============ 文章 ============ */
+.posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px}
+.post{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px 26px 22px;cursor:pointer;transition:.28s;
+  display:flex;flex-direction:column;
+}
+.post:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:var(--accent-soft)}
+.post-meta{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px}
+.tag{background:var(--accent-soft);color:var(--accent-deep);padding:2px 11px;border-radius:999px;font-size:12px}
+.post h3{font-family:"Noto Serif SC","Songti SC",serif;font-size:19px;letter-spacing:.5px;line-height:1.5;margin-bottom:10px}
+.post p{font-size:14px;color:var(--ink-soft);flex:1}
+.more{margin-top:16px;font-size:13.5px;color:var(--accent)}
+
+/* ============ 时间轴 ============ */
+.timeline{position:relative;max-width:700px;margin:0 auto;padding-left:30px}
+.timeline::before{content:"";position:absolute;left:6px;top:10px;bottom:10px;width:2px;background:var(--line)}
+.tl-item{position:relative;padding-bottom:34px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{
+  content:"";position:absolute;left:-30px;top:9px;width:12px;height:12px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 0 4px var(--bg);
+}
+.tl-date{font-size:12.5px;letter-spacing:.16em;color:var(--accent);margin-bottom:5px}
+.tl-item h3{font-family:"Noto Serif SC","Songti SC",serif;font-size:17.5px;letter-spacing:.5px;margin-bottom:6px}
+.tl-item p{font-size:14px;color:var(--ink-soft)}
+
+/* ============ 页脚 ============ */
+.footer{
+  text-align:center;padding:60px 24px 46px;border-top:1px solid var(--line);
+  color:var(--ink-soft);font-size:13.5px;
+}
+.footer .copy{margin-top:8px;font-size:12.5px;opacity:.75}
+
+/* ============ 底部播放器 ============ */
+.player{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:rgba(255,253,249,.93);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
+  box-shadow:0 -6px 24px rgba(96,72,58,.06);
+}
+.player-inner{
+  max-width:1180px;margin:0 auto;padding:10px 20px;
+  display:flex;align-items:center;gap:13px;
+}
+.p-cover{
+  width:44px;height:44px;border-radius:11px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(135deg,#f3e2d8,#e4eae1);color:var(--accent);
+  font-family:"Noto Serif SC",serif;font-size:17px;
+}
+.p-meta{min-width:0;width:150px;flex:none}
+.p-title{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-artist{font-size:12px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-btn{
+  width:38px;height:38px;border-radius:50%;border:none;background:transparent;
+  display:grid;place-items:center;color:var(--ink);transition:.2s;flex:none;
+}
+.p-btn:hover{background:var(--accent-soft);color:var(--accent-deep)}
+.p-btn svg{width:20px;height:20px;fill:currentColor}
+.p-play{width:44px;height:44px;background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(181,101,74,.3)}
+.p-play:hover{background:var(--accent-deep);color:#fff}
+.p-play svg{width:22px;height:22px}
+.p-bar{
+  flex:1;height:6px;border-radius:99px;background:#efe7de;cursor:pointer;position:relative;min-width:60px;
+}
+.p-bar:hover{height:8px}
+.p-bar-fill{height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .15s linear}
+.p-time{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;flex:none}
+.p-vol{width:80px;accent-color:var(--accent);flex:none}
+
+/* ============ 灯箱 ============ */
+.lightbox{
+  position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+  background:rgba(26,21,19,.95);padding:24px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.lightbox.open{display:flex;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lb-figure{max-width:min(1020px,94vw);text-align:center}
+.lb-img{
+  max-height:72vh;max-width:100%;margin:0 auto;border-radius:12px;
+  object-fit:contain;background:#1c1816;
+  box-shadow:0 24px 70px rgba(0,0,0,.55);
+  animation:pop .3s ease;
+}
+@keyframes pop{from{transform:scale(.97);opacity:.5}to{transform:scale(1);opacity:1}}
+.lb-cap{margin-top:18px;color:#f2ebe5}
+.lb-cap h4{font-family:"Noto Serif SC",serif;font-size:17px;letter-spacing:1px;font-weight:600}
+.lb-cap p{font-size:13px;color:#b6a89f;margin-top:5px}
+.lb-btn{
+  position:absolute;width:46px;height:46px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center;
+  font-size:26px;line-height:1;transition:.2s;
+}
+.lb-btn:hover{background:rgba(255,255,255,.26)}
+.lb-close{top:20px;right:20px;font-size:24px}
+.lb-prev{left:20px;top:50%;transform:translateY(-50%)}
+.lb-next{right:20px;top:50%;transform:translateY(-50%)}
+
+/* ============ 文章弹窗 ============ */
+.modal{
+  position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;
+  background:rgba(30,24,21,.62);padding:24px;backdrop-filter:blur(4px);
+}
+.modal.open{display:flex;animation:fadeIn .22s ease}
+.modal-box{
+  background:var(--card);width:100%;max-width:720px;max-height:86vh;overflow-y:auto;
+  border-radius:20px;padding:40px 40px 44px;box-shadow:0 30px 80px rgba(0,0,0,.3);
+  animation:pop .28s ease;
+}
+.modal-box .post-meta{margin-bottom:16px}
+.modal-box h2{
+  font-family:"Noto Serif SC","Songti SC",serif;font-size:25px;
+  letter-spacing:1px;line-height:1.5;margin-bottom:22px;
+}
+.modal-body p{font-size:15px;color:#4c433e;margin-bottom:16px;line-height:2}
+.modal-close{
+  margin-top:26px;padding:10px 26px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--ink-soft);font-size:14px;transition:.2s;
+}
+.modal-close:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ============ Toast ============ */
+.toast{
+  position:fixed;left:50%;bottom:110px;transform:translate(-50%,16px);
+  background:rgba(45,36,32,.94);color:#fff;font-size:13.5px;
+  padding:11px 22px;border-radius:999px;z-index:200;
+  opacity:0;pointer-events:none;transition:.3s;white-space:nowrap;max-width:90vw;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ============ 滚动淡入 ============ */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ============ 响应式 ============ */
+@media (max-width:820px){
+  .p-vol,.p-time{display:none}
+  .p-meta{width:auto;flex:1}
+}
+@media (max-width:640px){
+  body{padding-bottom:78px}
+  .nav-inner{padding:11px 16px}
+  .brand{font-size:17px}
+  .section{padding:58px 16px}
+  .hero{min-height:66vh;padding:70px 20px 80px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .photo-cap{font-size:12px;padding:22px 10px 9px}
+  .player-inner{gap:9px;padding:8px 14px}
+  .p-cover{width:38px;height:38px;font-size:15px}
+  .p-btn{width:34px;height:34px}
+  .p-play{width:40px;height:40px}
+  .modal-box{padding:28px 22px 32px}
+  .modal-box h2{font-size:21px}
+  .lb-prev{left:8px}.lb-next{right:8px}
+  .lb-btn{width:40px;height:40px}
+  .timeline{padding-left:26px}
+  .tl-item::before{left:-26px}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">我们的小时光<span>·</span></div>
+    <nav class="nav-links">
+      <a href="#gallery">照片墙</a>
+      <a href="#music">音乐</a>
+      <a href="#posts">随笔</a>
+      <a href="#timeline">时光轴</a>
+      <a href="/admin.html">发布</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-kicker">2015 — 2026</p>
+      <h1>我们的<em>小时光</em></h1>
+      <p class="hero-desc">
+        把一起走过的日子，一张张收好。<br>
+        这里放着照片、几首歌，和一些想说的话。
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#gallery">看看照片</a>
+        <a class="btn btn-ghost" href="#music">听首歌</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="gallery">
+    <div class="section-head">
+      <h2>照 片 墙</h2>
+      <p>点击任意一张，可以放大慢慢看</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="photoGrid"></div>
+  </section>
+
+  <section class="section" id="music">
+    <div class="section-head">
+      <h2>想 放 给 你 听 的 歌</h2>
+      <p>几首老歌，适合边看照片边听</p>
+    </div>
+    <div class="song-list" id="songList"></div>
+  </section>
+
+  <section class="section" id="posts">
+    <div class="section-head">
+      <h2>写 点 什 么</h2>
+      <p>一些琐碎的记录，怕以后忘了</p>
+    </div>
+    <div class="posts" id="postList"></div>
+  </section>
+
+  <section class="section" id="timeline">
+    <div class="section-head">
+      <h2>时 光 轴</h2>
+      <p>那些值得记住的日子</p>
+    </div>
+    <div class="timeline" id="timelineList"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>用照片和文字，留住时间。</p>
+  <p class="copy">© 2026 我们的小时光 · 家人的回忆盒子</p>
+</footer>
+
+<div class="player">
+  <div class="player-inner">
+    <div class="p-cover" id="pCover">♪</div>
+    <div class="p-meta">
+      <div class="p-title" id="pTitle">点击右侧播放</div>
+      <div class="p-artist" id="pArtist">家庭歌单</div>
+    </div>
+    <button class="p-btn" id="pPrev" title="上一首">
+      <svg viewBox="0 0 24 24"><path d="M6 6h2.2v12H6zm3.6 6L18 6v12z"/></svg>
+    </button>
+    <button class="p-btn p-play" id="pPlay" title="播放 / 暂停">
+      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="p-btn" id="pNext" title="下一首">
+      <svg viewBox="0 0 24 24"><path d="M18 6h-2.2v12H18zM14.4 12 6 6v12z"/></svg>
+    </button>
+    <div class="p-bar" id="pBar"><div class="p-bar-fill" id="pFill"></div></div>
+    <span class="p-time" id="pTime">0:00 / 0:00</span>
+    <input class="p-vol" id="pVol" type="range" min="0" max="1" step="0.01" value="0.8" title="音量">
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-btn lb-close" id="lbClose">×</button>
+  <button class="lb-btn lb-prev" id="lbPrev">‹</button>
+  <button class="lb-btn lb-next" id="lbNext">›</button>
+  <figure class="lb-figure">
+    <img class="lb-img" id="lbImg" src="" alt="">
+    <figcaption class="lb-cap">
+      <h4 id="lbTitle"></h4>
+      <p id="lbDesc"></p>
+    </figcaption>
+  </figure>
+</div>
+
+<div class="modal" id="postModal">
+  <div class="modal-box">
+    <div class="post-meta" id="mMeta"></div>
+    <h2 id="mTitle"></h2>
+    <div class="modal-body" id="mBody"></div>
+    <button class="modal-close" id="mClose">关闭</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PHOTOS = [
+  { src:"https://picsum.photos/seed/fam1/1000/750", title:"湘潭的回忆", desc:"院子里的石榴树又结果了", cat:"家庭", date:"2024-07" },
+  { src:"https://picsum.photos/seed/fam2/1000/750", title:"第一次学骑车", desc:"摔了三次，哭了两次，最后学会了", cat:"日常", date:"2019-04" },
+  { src:"https://picsum.photos/seed/fam3/1000/750", title:"海边的清晨", desc:"五点半就爬起来看日出", cat:"旅行", date:"2023-08" },
+  { src:"https://picsum.photos/seed/fam4/1000/750", title:"年夜饭", desc:"一桌菜，忙了一整天", cat:"家庭", date:"2025-01" },
+  { src:"https://picsum.photos/seed/fam5/1000/750", title:"老屋的窗", desc:"阳光照进来的样子，和小时候一样", cat:"老照片", date:"1998" },
+  { src:"https://picsum.photos/seed/fam6/1000/750", title:"山里的雾", desc:"那天走了两万步", cat:"旅行", date:"2022-10" },
+  { src:"https://picsum.photos/seed/fam7/1000/750", title:"爷爷的自行车", desc:"骑了二十年，还是不舍得换", cat:"老照片", date:"2005" },
+  { src:"https://picsum.photos/seed/fam8/1000/750", title:"雨天窗台", desc:"什么都不做的一个下午", cat:"日常", date:"2024-05" },
+  { src:"https://picsum.photos/seed/fam9/1000/750", title:"全家福", desc:"终于凑齐了一次", cat:"家庭", date:"2025-02" },
+  { src:"https://picsum.photos/seed/fam10/1000/750", title:"小巷的猫", desc:"每天下午都在同一个地方晒太阳", cat:"日常", date:"2023-06" },
+  { src:"https://picsum.photos/seed/fam11/1000/750", title:"山顶的云", desc:"爬上去腿都软了，但值得", cat:"旅行", date:"2021-09" },
+  { src:"https://picsum.photos/seed/fam12/1000/750", title:"外婆的手", desc:"这双手做了五十年的饭", cat:"老照片", date:"2016" }
+];
+
+const SONGS = [
+  { title:"泪海",       artist:"想放给你听", src:"music/leihai.mp3" },
+  { title:"送别",       artist:"想放给你听", src:"music/2.mp3" },
+  { title:"月亮代表我的心", artist:"想放给你听", src:"music/3.mp3" },
+  { title:"稻香",       artist:"想放给你听", src:"music/4.mp3" }
+];
+
+const POSTS = [
+  {
+    title:"搬家那天，翻出了一整箱老照片",
+    date:"2025-03-12", tag:"随笔",
+    excerpt:"很多照片都泛黄了，边角卷起来，背面还写着字……",
+    content:`<p>搬家那天，在储藏室最里面的角落翻出一个纸箱，箱子已经很旧了，上面用马克笔写着"照片"两个字。</p>
+       <p>打开的时候有一股旧纸的味道。里面塞满了大大小小的相片，很多都泛黄了，边角卷起来。有几张背面还写着字，是外婆的笔迹，写着日期，还有一句"今天天气很好"。</p>
+       <p>有一张是三十年前的合影，站在老屋门口，那时候房子还很新，院子里那棵石榴树才刚过膝盖。照片上的人，有几个已经见不到了。</p>
+       <p>我坐在地板上一张一张地看，看了整整一个下午。搬家公司的人在楼下喊我，我才反应过来。</p>
+       <p>后来我把它们全部扫描了一遍，存进了这个网站里。这样就算再搬十次家，也不会丢了。</p>`
+  },
+  {
+    title:"妈妈的红烧肉，我终于学会了",
+    date:"2025-01-28", tag:"日常",
+    excerpt:"她说没有配方，就是看着放。我录了三次视频才搞明白……",
+    content:`<p>我打电话问她红烧肉怎么做，她说："没有配方啊，就是看着放。"</p>
+       <p>我说那我怎么知道放多少？她说："你看着放嘛。"</p>
+       <p>于是我在过年回家的时候，架了个手机录了三次。后来慢慢看回放，才发现诀窍根本不在调料，在于炒糖色的火候——要小火，要一直搅，颜色变到枣红就要马上关火，晚三秒钟就苦了。</p>
+       <p>那天我做了一锅，味道有七分像。妈妈说："可以了可以了，比我做得还香。"我知道她是骗我的，但我还是很高兴。</p>`
+  },
+  {
+    title:"今年春节，我们拍了一张全家福",
+    date:"2025-02-01", tag:"家庭",
+    excerpt:"上一次拍全家福，还是十年前……",
+    content:`<p>今年春节，人难得凑齐了。小叔从外地赶回来，表妹带着孩子，一屋子热闹得不行。</p>
+       <p>我提议拍一张全家福。大家先是推脱，说衣服不好看、头发没弄，最后还是都站到了客厅那面墙前面。</p>
+       <p>架好三脚架，设置十秒倒计时。第一张大家都还没准备好，表情很僵；第二张有人在笑；第三张，小孩子突然哭了起来。</p>
+       <p>最后选的还是第一张。虽然有点僵，但是每个人都看着镜头。</p>
+       <p>我把它打印出来挂在了墙上。上一次拍全家福，是十年前了。下一次，不知道还要等多久。</p>`
+  }
+];
+
+const TIMELINE = [
+  { date:"2015 · 春", title:"我们搬进了新家", text:"房子不大，但阳台朝南，冬天有太阳。" },
+  { date:"2017 · 夏", title:"第一次全家旅行", text:"去了海边，那天下着小雨，但每个人都很开心。" },
+  { date:"2019 · 秋", title:"学会了骑车", text:"摔了很多次，膝盖上留了一个疤。" },
+  { date:"2021 · 冬", title:"外婆八十大寿", text:"来了很多人，办了两桌酒。" },
+  { date:"2023 · 春", title:"小外甥出生了", text:"家里终于有了小孩子的声音。" },
+  { date:"2025 · 春节", title:"拍了一张全家福", text:"距离上一次，整整十年。" }
+];
+
+/* ---------- 工具 ---------- */
+const $ = id => document.getElementById(id);
+const toastEl = $('toast');
+let toastTimer;
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toastEl.classList.remove('show'), 2800);
+}
+const fmtTime = s => {
+  s = Math.floor(s || 0);
+  return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+};
+
+/* ---------- 滚动淡入 ---------- */
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+}, { threshold:0.1, rootMargin:'0px 0px -40px 0px' });
+function observeReveal(){
+  document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
+}
 
 /* ==========================================================
    相册
@@ -372,7 +795,6 @@ async function syncFromCloud(){
     const json = await res.json();
     if (!json.success || !Array.isArray(json.data)) return;
 
-    // 倒序遍历让最新发布的排在最前面
     json.data.slice().reverse().forEach(row => {
       let meta = {};
       try { meta = JSON.parse(row.content || '{}'); } catch(e){}
@@ -409,9 +831,7 @@ async function syncFromCloud(){
     });
 
     renderAll();
-  } catch (e) {
-    // 本地直接双击预览时忽略接口报错
-  }
+  } catch (e) {}
 }
 
 renderAll();
