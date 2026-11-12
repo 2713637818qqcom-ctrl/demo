@@ -158,86 +158,6 @@ section[id]{scroll-margin-top:74px}
 .song-bars i:nth-child(3){animation-delay:.3s}
 @keyframes bounce{0%,100%{height:4px}50%{height:14px}}
 
-/* ============ 语音墙 ============ */
-.recorder{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:30px}
-.rec-btn{
-  width:86px;height:86px;border-radius:50%;border:none;background:var(--accent);color:#fff;
-  display:grid;place-items:center;box-shadow:0 14px 34px rgba(181,101,74,.3);
-  transition:transform .2s,background .2s;
-}
-.rec-btn:hover{transform:scale(1.05)}
-.rec-btn:active{transform:scale(.97)}
-.rec-btn svg{width:36px;height:36px;fill:currentColor}
-.rec-btn.recording{background:#d9534f;animation:pulse 1.5s infinite}
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(217,83,79,.45)}
-  70%{box-shadow:0 0 0 24px rgba(217,83,79,0)}
-  100%{box-shadow:0 0 0 0 rgba(217,83,79,0)}
-}
-.rec-status{font-size:14px;color:var(--ink-soft);text-align:center}
-.rec-status.live{color:#d9534f;font-weight:600;letter-spacing:.05em}
-.rec-status .dot{
-  display:inline-block;width:8px;height:8px;border-radius:50%;background:#d9534f;
-  margin-right:7px;vertical-align:middle;animation:blink 1s infinite;
-}
-@keyframes blink{50%{opacity:.25}}
-.rec-tip{font-size:12.5px;color:var(--ink-soft);text-align:center;max-width:520px;line-height:1.9;opacity:.85}
-
-.rec-preview{
-  width:100%;max-width:560px;margin:0 auto 30px;background:var(--card);border:1px solid var(--line);
-  border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);
-  animation:pop .28s ease;
-}
-.rec-preview[hidden]{display:none}
-.pv-title{font-size:14.5px;margin-bottom:14px;color:var(--accent-deep);font-weight:600}
-.rec-preview audio{width:100%;margin-bottom:14px;height:38px}
-.pv-fields{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
-.pv-fields input{
-  width:100%;padding:11px 15px;border:1px solid var(--line);border-radius:11px;
-  font-size:14px;font-family:inherit;background:#fffdfa;color:var(--ink);outline:none;transition:.2s;
-}
-.pv-fields input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(181,101,74,.1)}
-.pv-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
-.btn-sm{padding:9px 22px;border-radius:999px;font-size:14px;border:1px solid transparent;transition:.2s}
-.btn-sm.primary{background:var(--accent);color:#fff}
-.btn-sm.primary:hover{background:var(--accent-deep)}
-.btn-sm.primary:disabled{opacity:.55;cursor:not-allowed}
-.btn-sm.ghost{border-color:var(--line);background:transparent;color:var(--ink-soft)}
-.btn-sm.ghost:hover{border-color:var(--accent);color:var(--accent)}
-
-.voice-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-.voice-card{
-  background:var(--card);border:1px solid var(--line);border-radius:16px;
-  padding:16px 18px;display:flex;gap:14px;align-items:flex-start;
-  transition:.24s;animation:pop .3s ease;
-}
-.voice-card:hover{border-color:var(--accent-soft);box-shadow:0 10px 26px rgba(96,72,58,.1)}
-.v-play{
-  width:42px;height:42px;border-radius:50%;border:none;flex:none;
-  background:var(--accent-soft);color:var(--accent-deep);
-  display:grid;place-items:center;transition:.2s;
-}
-.v-play:hover{background:var(--accent);color:#fff}
-.v-play svg{width:18px;height:18px;fill:currentColor}
-.v-main{flex:1;min-width:0}
-.v-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
-.v-name{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.v-time{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;flex:none}
-.v-progress{
-  height:6px;border-radius:99px;background:#efe7de;overflow:hidden;cursor:pointer;margin-bottom:9px;
-}
-.v-progress-fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .12s linear}
-.v-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--ink-soft)}
-.v-note{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic}
-.v-dur{flex:none;font-variant-numeric:tabular-nums}
-.v-actions{display:flex;gap:2px;flex:none}
-.v-icon-btn{
-  width:30px;height:30px;border-radius:8px;border:none;background:transparent;
-  color:var(--ink-soft);display:grid;place-items:center;transition:.2s;font-size:15px;
-}
-.v-icon-btn:hover{background:var(--accent-soft);color:var(--accent-deep)}
-.v-empty{grid-column:1/-1;text-align:center;color:var(--ink-soft);padding:36px 0;font-size:14px}
-
 /* ============ 文章 ============ */
 .posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px}
 .post{
@@ -398,10 +318,6 @@ section[id]{scroll-margin-top:74px}
   .lb-btn{width:40px;height:40px}
   .timeline{padding-left:26px}
   .tl-item::before{left:-26px}
-  .voice-grid{grid-template-columns:1fr}
-  .rec-btn{width:76px;height:76px}
-  .rec-btn svg{width:32px;height:32px}
-  .rec-preview{padding:18px 16px}
 }
 </style>
 </head>
@@ -413,7 +329,6 @@ section[id]{scroll-margin-top:74px}
     <nav class="nav-links">
       <a href="#gallery">照片墙</a>
       <a href="#music">音乐</a>
-      <a href="#voice">语音墙</a>
       <a href="#posts">随笔</a>
       <a href="#timeline">时光轴</a>
       <a href="/admin.html">发布</a>
@@ -432,7 +347,7 @@ section[id]{scroll-margin-top:74px}
       </p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#gallery">看看照片</a>
-        <a class="btn btn-ghost" href="#voice">说句话</a>
+        <a class="btn btn-ghost" href="#music">听首歌</a>
       </div>
     </div>
   </section>
@@ -454,36 +369,6 @@ section[id]{scroll-margin-top:74px}
     <div class="song-list" id="songList"></div>
   </section>
 
-  <section class="section" id="voice">
-    <div class="section-head">
-      <h2>语 音 墙</h2>
-      <p>想说什么就说吧，声音会被好好存起来</p>
-    </div>
-
-    <div class="recorder">
-      <button class="rec-btn" id="recBtn" title="点击开始录音">
-        <svg id="recIcon" viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>
-      </button>
-      <div class="rec-status" id="recStatus">点击麦克风，开始说话</div>
-      <p class="rec-tip">录下的声音会同步保存在云端，所有家人打开网页都能听到。</p>
-    </div>
-
-    <div class="rec-preview" id="recPreview" hidden>
-      <div class="pv-title">🎙️ 录音完成，试听一下？</div>
-      <audio id="previewAudio" controls></audio>
-      <div class="pv-fields">
-        <input id="voiceName" maxlength="20" placeholder="你的名字（默认：家人）">
-        <input id="voiceNote" maxlength="60" placeholder="想配一句话？可以不填">
-      </div>
-      <div class="pv-actions">
-        <button class="btn-sm ghost" id="recRedo">重新录</button>
-        <button class="btn-sm primary" id="recSave">保存到语音墙</button>
-      </div>
-    </div>
-
-    <div class="voice-grid" id="voiceGrid"></div>
-  </section>
-
   <section class="section" id="posts">
     <div class="section-head">
       <h2>写 点 什 么</h2>
@@ -502,7 +387,7 @@ section[id]{scroll-margin-top:74px}
 </main>
 
 <footer class="footer">
-  <p>用照片、文字和声音，留住时间。</p>
+  <p>用照片和文字，留住时间。</p>
   <p class="copy">© 2026 我们的小时光 · 家人的回忆盒子</p>
 </footer>
 
@@ -554,16 +439,10 @@ section[id]{scroll-margin-top:74px}
 
 <script>
 const PHOTOS = [
-  { src:"https://picsum.photos/seed/fam1/1000/750", title:"外婆家的夏天", desc:"院子里的石榴树又结果了", cat:"家庭", date:"2024-07" },
-  { src:"https://picsum.photos/seed/fam2/1000/750", title:"第一次学骑车", desc:"摔了三次，哭了两次，最后学会了", cat:"日常", date:"2019-04" },
-  { src:"https://picsum.photos/seed/fam3/1000/750", title:"海边的清晨", desc:"五点半就爬起来看日出", cat:"旅行", date:"2023-08" },
-  { src:"https://picsum.photos/seed/fam4/1000/750", title:"年夜饭", desc:"一桌菜，忙了一整天", cat:"家庭", date:"2025-01" },
-  { src:"https://picsum.photos/seed/fam5/1000/750", title:"老屋的窗", desc:"阳光照进来的样子，和小时候一样", cat:"老照片", date:"1998" },
-  { src:"https://picsum.photos/seed/fam6/1000/750", title:"山里的雾", desc:"那天走了两万步", cat:"旅行", date:"2022-10" }
+
 ];
 
 const SONGS = [
-  { title:"童年",       artist:"想放给你听", src:"music/1.mp3" },
   { title:"送别",       artist:"想放给你听", src:"music/2.mp3" },
   { title:"月亮代表我的心", artist:"想放给你听", src:"music/3.mp3" },
   { title:"稻香",       artist:"想放给你听", src:"music/4.mp3" }
@@ -575,6 +454,9 @@ const POSTS = [
     date:"2025-03-12", tag:"随笔",
     excerpt:"很多照片都泛黄了，边角卷起来，背面还写着字……",
     content:`<p>搬家那天，在储藏室最里面的角落翻出一个纸箱，箱子已经很旧了，上面用马克笔写着"照片"两个字。</p>
+       <p>打开的时候有一股旧纸的味道。里面塞满了大大小小的相片，很多都泛黄了，边角卷起来。有几张背面还写着字，是外婆的笔迹，写着日期，还有一句"今天天气很好"。</p>
+       <p>有一张是三十年前的合影，站在老屋门口，那时候房子还很新，院子里那棵石榴树才刚过膝盖。照片上的人，有几个已经见不到了。</p>
+       <p>我坐在地板上一张一张地看，看了整整一个下午。搬家公司的人在楼下喊我，我才反应过来。</p>
        <p>后来我把它们全部扫描了一遍，存进了这个网站里。这样就算再搬十次家，也不会丢了。</p>`
   },
   {
@@ -582,15 +464,32 @@ const POSTS = [
     date:"2025-01-28", tag:"日常",
     excerpt:"她说没有配方，就是看着放。我录了三次视频才搞明白……",
     content:`<p>我打电话问她红烧肉怎么做，她说："没有配方啊，就是看着放。"</p>
-       <p>那天我做了一锅，味道有七分像。妈妈说："可以了可以了，比我做得还香。"</p>`
+       <p>我说那我怎么知道放多少？她说："你看着放嘛。"</p>
+       <p>于是我在过年回家的时候，架了个手机录了三次。后来慢慢看回放，才发现诀窍根本不在调料，在于炒糖色的火候——要小火，要一直搅，颜色变到枣红就要马上关火，晚三秒钟就苦了。</p>
+       <p>那天我做了一锅，味道有七分像。妈妈说："可以了可以了，比我做得还香。"我知道她是骗我的，但我还是很高兴。</p>`
+  },
+  {
+    title:"今年春节，我们拍了一张全家福",
+    date:"2025-02-01", tag:"家庭",
+    excerpt:"上一次拍全家福，还是十年前……",
+    content:`<p>今年春节，人难得凑齐了。小叔从外地赶回来，表妹带着孩子，一屋子热闹得不行。</p>
+       <p>我提议拍一张全家福。大家先是推脱，说衣服不好看、头发没弄，最后还是都站到了客厅那面墙前面。</p>
+       <p>架好三脚架，设置十秒倒计时。第一张大家都还没准备好，表情很僵；第二张有人在笑；第三张，小孩子突然哭了起来。</p>
+       <p>最后选的还是第一张。虽然有点僵，但是每个人都看着镜头。</p>
+       <p>我把它打印出来挂在了墙上。上一次拍全家福，是十年前了。下一次，不知道还要等多久。</p>`
   }
 ];
 
 const TIMELINE = [
   { date:"2015 · 春", title:"我们搬进了新家", text:"房子不大，但阳台朝南，冬天有太阳。" },
+  { date:"2017 · 夏", title:"第一次全家旅行", text:"去了海边，那天下着小雨，但每个人都很开心。" },
+  { date:"2019 · 秋", title:"学会了骑车", text:"摔了很多次，膝盖上留了一个疤。" },
+  { date:"2021 · 冬", title:"外婆八十大寿", text:"来了很多人，办了两桌酒。" },
+  { date:"2023 · 春", title:"小外甥出生了", text:"家里终于有了小孩子的声音。" },
   { date:"2025 · 春节", title:"拍了一张全家福", text:"距离上一次，整整十年。" }
 ];
 
+/* ---------- 工具 ---------- */
 const $ = id => document.getElementById(id);
 const toastEl = $('toast');
 let toastTimer;
@@ -604,16 +503,8 @@ const fmtTime = s => {
   s = Math.floor(s || 0);
   return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
 };
-const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => (
-  {'&':'&','<':'<','>':'>','"':'"',"'":'''}[c]
-));
-function formatDateTime(ts){
-  const d = new Date(ts);
-  if(isNaN(d.getTime())) return String(ts || '');
-  const p = n => String(n).padStart(2,'0');
-  return `${d.getFullYear()}.${p(d.getMonth()+1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-}
 
+/* ---------- 滚动淡入 ---------- */
 const io = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
@@ -668,6 +559,7 @@ photoGrid.addEventListener('click', e=>{
   openLightbox(Number(fig.dataset.i));
 });
 
+/* ---------- 灯箱 ---------- */
 const lightbox = $('lightbox');
 const lbImg = $('lbImg'), lbTitle = $('lbTitle'), lbDesc = $('lbDesc');
 
@@ -752,6 +644,10 @@ function updatePlayerUI(){
 function setPlayIcon(isPlaying){
   playing = isPlaying;
   pPlay.innerHTML = isPlaying ? ICON_PAUSE : ICON_PLAY;
+  const row = songListEl.querySelector('.song.playing');
+  if(row){
+    row.classList.toggle('paused', !isPlaying);
+  }
 }
 
 function playAudio(){
@@ -802,10 +698,7 @@ pBar.addEventListener('click', e=>{
 
 pVol.addEventListener('input', ()=>{ audio.volume = Number(pVol.value); });
 
-audio.addEventListener('play', ()=>{
-  setPlayIcon(true);
-  stopVoiceAudio();
-});
+audio.addEventListener('play', ()=>setPlayIcon(true));
 audio.addEventListener('pause', ()=>setPlayIcon(false));
 audio.addEventListener('timeupdate', ()=>{
   if(!audio.duration) return;
@@ -816,347 +709,12 @@ audio.addEventListener('ended', ()=>loadSong(songIndex + 1, true));
 audio.addEventListener('error', ()=>{
   if(playing){
     setPlayIcon(false);
-    toast('这首歌放不出来，请检查音频链接');
+    toast('这首歌暂时放不出来，请检查音频地址');
   }
 });
 
 /* ==========================================================
-   语音墙（全云端 D1 + GitHub 同步版）
-   ========================================================== */
-const recBtn      = $('recBtn');
-const recIcon     = $('recIcon');
-const recStatus   = $('recStatus');
-const recPreview  = $('recPreview');
-const previewAudio= $('previewAudio');
-const voiceNameEl = $('voiceName');
-const voiceNoteEl = $('voiceNote');
-const voiceGrid   = $('voiceGrid');
-
-const MIC_ICON    = '<path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/>';
-const STOP_ICON   = '<rect x="6" y="6" width="12" height="12" rx="2.5"/>';
-
-let recState = 'idle';
-let mediaRecorder = null;
-let recChunks = [];
-let recStream = null;
-let recTimer = null;
-let recSeconds = 0;
-let recBlob = null;
-let previewURL = null;
-
-function pickMime(){
-  if(!window.MediaRecorder) return '';
-  const types = ['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'];
-  for(const t of types){
-    if(MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) return t;
-  }
-  return '';
-}
-
-function setStatus(text, live){
-  recStatus.textContent = text;
-  recStatus.classList.toggle('live', !!live);
-  if(live){
-    recStatus.innerHTML = '<span class="dot"></span>' + esc(text);
-  }
-}
-
-async function startRecording(){
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    toast('当前浏览器不支持录音，建议用 Chrome / Safari 试试');
-    return;
-  }
-  try{
-    recStream = await navigator.mediaDevices.getUserMedia({ audio:true });
-  }catch(err){
-    toast('拿不到麦克风权限，请在浏览器里允许使用麦克风');
-    return;
-  }
-  const mime = pickMime();
-  try{
-    mediaRecorder = mime
-      ? new MediaRecorder(recStream, { mimeType: mime })
-      : new MediaRecorder(recStream);
-  }catch(err){
-    try{ mediaRecorder = new MediaRecorder(recStream); }
-    catch(e2){ toast('这台设备暂时不能录音'); releaseStream(); return; }
-  }
-
-  recChunks = [];
-  mediaRecorder.ondataavailable = e=>{ if(e.data && e.data.size > 0) recChunks.push(e.data); };
-  mediaRecorder.onstop = ()=>{
-    const type = (mediaRecorder && mediaRecorder.mimeType) || 'audio/webm';
-    recBlob = new Blob(recChunks, { type });
-    releaseStream();
-    showPreview();
-  };
-  mediaRecorder.onerror = ()=>{ toast('录音出了点问题，再试一次吧'); stopRecording(); };
-
-  try{ mediaRecorder.start(); }
-  catch(e){ toast('录音启动失败，请刷新页面重试'); releaseStream(); return; }
-
-  recSeconds = 0;
-  updateRecTimer();
-  recTimer = setInterval(()=>{ recSeconds++; updateRecTimer(); }, 1000);
-  setRecState('recording');
-}
-
-function stopRecording(){
-  if(mediaRecorder && mediaRecorder.state !== 'inactive'){
-    try{ mediaRecorder.stop(); }catch(e){}
-  }else{
-    releaseStream();
-  }
-  if(recTimer){ clearInterval(recTimer); recTimer = null; }
-}
-
-function updateRecTimer(){
-  setStatus('正在录音 ' + fmtTime(recSeconds) + ' · 点击停止', true);
-}
-
-function releaseStream(){
-  if(recStream){
-    recStream.getTracks().forEach(t=>t.stop());
-    recStream = null;
-  }
-  if(recTimer){ clearInterval(recTimer); recTimer = null; }
-}
-
-function setRecState(state){
-  recState = state;
-  if(state === 'recording'){
-    recBtn.classList.add('recording');
-    recIcon.innerHTML = STOP_ICON;
-    recBtn.title = '点击停止录音';
-    recPreview.hidden = true;
-  }else{
-    recBtn.classList.remove('recording');
-    recIcon.innerHTML = MIC_ICON;
-    recBtn.title = '点击开始录音';
-    if(state === 'idle'){
-      setStatus('点击麦克风，开始说话', false);
-    }
-  }
-}
-
-function showPreview(){
-  if(previewURL){ URL.revokeObjectURL(previewURL); previewURL = null; }
-  previewURL = URL.createObjectURL(recBlob);
-  previewAudio.src = previewURL;
-  recPreview.hidden = false;
-  setRecState('preview');
-  setStatus('录音完成，听一下再保存吧', false);
-  voiceNameEl.value = '';
-  voiceNoteEl.value = '';
-  voiceNameEl.focus();
-}
-
-function resetRecorder(){
-  if(previewURL){ URL.revokeObjectURL(previewURL); previewURL = null; }
-  previewAudio.removeAttribute('src');
-  try{ previewAudio.load(); }catch(e){}
-  recBlob = null;
-  recChunks = [];
-  recSeconds = 0;
-  recPreview.hidden = true;
-  setRecState('idle');
-}
-
-recBtn.addEventListener('click', ()=>{
-  if(recState === 'recording') stopRecording();
-  else if(recState === 'idle') startRecording();
-});
-
-$('recRedo').addEventListener('click', ()=>{
-  resetRecorder();
-  startRecording();
-});
-
-$('recSave').addEventListener('click', async ()=>{
-  if(!recBlob){ toast('还没有录音呢'); return; }
-  const saveBtn = $('recSave');
-  saveBtn.disabled = true;
-  saveBtn.textContent = '正在同步到云端...';
-
-  const name = voiceNameEl.value.trim() || '家人';
-  const note = voiceNoteEl.value.trim();
-  const mime = recBlob.type || 'audio/webm';
-  const ext = mime.includes('mp4') ? 'm4a' : mime.includes('ogg') ? 'ogg' : 'webm';
-
-  const formData = new FormData();
-  formData.append('type', 'voice');
-  formData.append('title', name);
-  formData.append('file', new File([recBlob], `voice.${ext}`, { type: mime }));
-  formData.append('content', JSON.stringify({
-    note,
-    duration: recSeconds,
-    mime,
-    createdAt: Date.now()
-  }));
-
-  try{
-    const res = await fetch('/api/posts', { method: 'POST', body: formData });
-    const json = await res.json();
-    if(!json.success) throw new Error(json.error || '保存失败');
-
-    voicesCache.unshift({
-      id: json.id || Date.now(),
-      name,
-      note,
-      src: json.media_url,
-      duration: recSeconds,
-      mime,
-      createdAt: Date.now()
-    });
-    renderVoices();
-    resetRecorder();
-    toast('语音已同步到云端，全家人都听得到啦 ✓');
-  }catch(err){
-    toast('云端保存失败：' + err.message);
-  }finally{
-    saveBtn.disabled = false;
-    saveBtn.textContent = '保存到语音墙';
-  }
-});
-
-/* ---------- 语音列表渲染与云端播放 ---------- */
-let voicesCache = [];
-let currentVoiceAudio = null;
-let currentVoiceId = null;
-
-const ICON_VPLAY  = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
-const ICON_VPAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
-
-function renderVoices(){
-  if(!voicesCache.length){
-    voiceGrid.innerHTML = '<p class="v-empty">还没有语音。点上面的麦克风，说点什么吧 🎙️</p>';
-    return;
-  }
-  voiceGrid.innerHTML = voicesCache.map(v=>`
-    <div class="voice-card" data-id="${v.id}">
-      <button class="v-play" data-act="play" title="播放 / 暂停">${ICON_VPLAY}</button>
-      <div class="v-main">
-        <div class="v-top">
-          <span class="v-name">${esc(v.name)}</span>
-          <span class="v-time">${formatDateTime(v.createdAt)}</span>
-        </div>
-        <div class="v-progress" data-act="seek"><div class="v-progress-fill"></div></div>
-        <div class="v-meta">
-          <span class="v-note">${v.note ? esc(v.note) : '<span style="opacity:.6">—</span>'}</span>
-          <span class="v-dur">${fmtTime(v.duration)}</span>
-        </div>
-      </div>
-      <div class="v-actions">
-        <a class="v-icon-btn" href="${v.src}" download="语音-${esc(v.name)}.webm" target="_blank" title="下载这段语音" style="text-decoration:none">⤓</a>
-        <button class="v-icon-btn" data-act="delete" title="删除">✕</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function stopVoiceAudio(){
-  if(currentVoiceAudio){
-    currentVoiceAudio.pause();
-    currentVoiceAudio = null;
-  }
-  currentVoiceId = null;
-  document.querySelectorAll('.voice-card .v-play').forEach(b=>b.innerHTML = ICON_VPLAY);
-  document.querySelectorAll('.v-progress-fill').forEach(f=>f.style.width = '0%');
-}
-
-function playVoice(id){
-  const v = voicesCache.find(x=>String(x.id) === String(id));
-  if(!v || !v.src) return;
-
-  if(currentVoiceId === String(id) && currentVoiceAudio){
-    if(currentVoiceAudio.paused) currentVoiceAudio.play();
-    else currentVoiceAudio.pause();
-    return;
-  }
-
-  stopVoiceAudio();
-  audio.pause();
-
-  currentVoiceAudio = new Audio(v.src);
-  currentVoiceId = String(id);
-
-  const card = voiceGrid.querySelector(`.voice-card[data-id="${v.id}"]`);
-  const playBtn = card ? card.querySelector('.v-play') : null;
-  const fill = card ? card.querySelector('.v-progress-fill') : null;
-
-  currentVoiceAudio.addEventListener('play', ()=>{
-    if(playBtn) playBtn.innerHTML = ICON_VPAUSE;
-  });
-  currentVoiceAudio.addEventListener('pause', ()=>{
-    if(playBtn) playBtn.innerHTML = ICON_VPLAY;
-  });
-  currentVoiceAudio.addEventListener('timeupdate', ()=>{
-    if(!currentVoiceAudio.duration) return;
-    const pct = currentVoiceAudio.currentTime / currentVoiceAudio.duration * 100;
-    if(fill) fill.style.width = pct + '%';
-  });
-  currentVoiceAudio.addEventListener('ended', ()=>{
-    if(playBtn) playBtn.innerHTML = ICON_VPLAY;
-    if(fill) fill.style.width = '0%';
-    currentVoiceAudio.currentTime = 0;
-  });
-  currentVoiceAudio.play().catch(()=>{
-    toast('这段语音加载中或格式不支持，请稍后再试');
-    stopVoiceAudio();
-  });
-}
-
-voiceGrid.addEventListener('click', async e=>{
-  const card = e.target.closest('.voice-card');
-  if(!card) return;
-  const id = card.dataset.id;
-  const actEl = e.target.closest('[data-act]');
-  if(!actEl) return;
-  const act = actEl.dataset.act;
-
-  if(act === 'play'){
-    playVoice(id);
-    return;
-  }
-
-  if(act === 'seek'){
-    if(currentVoiceId !== String(id) || !currentVoiceAudio) return;
-    if(!currentVoiceAudio.duration) return;
-    const rect = actEl.getBoundingClientRect();
-    const ratio = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
-    currentVoiceAudio.currentTime = ratio * currentVoiceAudio.duration;
-    return;
-  }
-
-  if(act === 'delete'){
-    let pwd = localStorage.getItem('family_blog_pwd') || '';
-    if(!pwd){
-      pwd = prompt('请输入管理密码以删除此条语音：') || '';
-      if(!pwd) return;
-      localStorage.setItem('family_blog_pwd', pwd);
-    } else if(!confirm('确定要从云端删除这段语音吗？')) {
-      return;
-    }
-
-    const res = await fetch(`/api/posts?id=${id}`, {
-      method: 'DELETE',
-      headers: { 'X-Admin-Password': pwd }
-    });
-    const json = await res.json();
-    if(json.success){
-      if(currentVoiceId === String(id)) stopVoiceAudio();
-      voicesCache = voicesCache.filter(v=>String(v.id) !== String(id));
-      renderVoices();
-      toast('已从云端删除');
-    }else{
-      localStorage.removeItem('family_blog_pwd');
-      toast('删除失败：' + json.error);
-    }
-  }
-});
-
-/* ==========================================================
-   文章与时光轴
+   文章与时光轴渲染函数
    ========================================================== */
 const postListEl = $('postList');
 const postModal = $('postModal');
@@ -1208,14 +766,13 @@ function renderTimeline(){
 }
 
 /* ==========================================================
-   初始化：先渲染本地初始数据，再拉取云端数据库全量合并
+   初始化：先渲染本地初始数据，再拉取云端数据库合并
    ========================================================== */
 function renderAll(){
   renderFilters();
   renderPhotos(PHOTOS);
   renderSongs();
   updatePlayerUI();
-  renderVoices();
   renderPosts();
   renderTimeline();
 }
@@ -1226,7 +783,6 @@ async function syncFromCloud(){
     const json = await res.json();
     if (!json.success || !Array.isArray(json.data)) return;
 
-    const cloudVoices = [];
     json.data.slice().reverse().forEach(row => {
       let meta = {};
       try { meta = JSON.parse(row.content || '{}'); } catch(e){}
@@ -1245,16 +801,6 @@ async function syncFromCloud(){
           artist: meta.artist || '想放给你听',
           src: row.media_url
         });
-      } else if (row.type === 'voice' && row.media_url) {
-        cloudVoices.unshift({
-          id: row.id,
-          name: row.title || '家人',
-          note: meta.note || '',
-          src: row.media_url,
-          duration: meta.duration || 0,
-          mime: meta.mime || 'audio/webm',
-          createdAt: meta.createdAt || row.created_at || Date.now()
-        });
       } else if (row.type === 'post') {
         POSTS.unshift({
           title: row.title,
@@ -1272,17 +818,12 @@ async function syncFromCloud(){
       }
     });
 
-    voicesCache = cloudVoices;
     renderAll();
   } catch (e) {}
 }
 
 renderAll();
 syncFromCloud();
-
-window.addEventListener('beforeunload', ()=>{
-  if(previewURL) URL.revokeObjectURL(previewURL);
-});
 </script>
 </body>
 </html>
