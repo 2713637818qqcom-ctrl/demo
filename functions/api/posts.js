@@ -15,43 +15,35 @@ export async function onRequestGet(context) {
 export async function onRequestPost(context) {
   const { request, env } = context;
 
+  const password = request.headers.get("X-Admin-Password");
+  if (!password || password !== env.ADMIN_PASSWORD) {
+    return Response.json({ success: false, error: "管理密码错误" }, { status: 401 });
+  }
+
   try {
     const formData = await request.formData();
-    const type = formData.get("type") || "post"; // photo | music | voice | post | timeline
-    const password = request.headers.get("X-Admin-Password");
-
-    // 语音墙(voice)允许家人直接免密留言；其他板块需要校验管理密码
-    if (type !== "voice") {
-      if (!password || password !== env.ADMIN_PASSWORD) {
-        return Response.json({ success: false, error: "管理密码错误" }, { status: 401 });
-      }
-    }
-
+    const type = formData.get("type") || "post"; // photo | music | post | timeline
     const title = formData.get("title") || "";
-    const content = formData.get("content") || "{}";
+    const content = formData.get("content") || "{}"; // 存放扩展属性的 JSON 字符串
     const file = formData.get("file");
 
     let mediaUrl = formData.get("external_url") || "";
     let mediaKey = "";
 
-    // 如果包含文件（照片 / 音乐 / 语音），自动通过 GitHub API 上传并生成 CDN 链接
+    // 如果选择了本地文件，自动通过 GitHub API 上传并生成 CDN 链接
     if (file && file.size > 0) {
-      const ext = (file.name && file.name.includes("."))
-        ? file.name.split(".").pop()
-        : (type === "voice" ? "webm" : "bin");
-
-      const folderMap = { music: "music", voice: "voices", photo: "images" };
-      const folder = folderMap[type] || "images";
+      const ext = file.name.split(".").pop();
+      const folder = type === "music" ? "music" : "images";
       mediaKey = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
       const arrayBuffer = await file.arrayBuffer();
       const bytes = new Uint8Array(arrayBuffer);
-      const chunks = [];
+      let binary = "";
       const chunkSize = 0x8000;
       for (let i = 0; i < bytes.length; i += chunkSize) {
-        chunks.push(String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize)));
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
       }
-      const base64Content = btoa(chunks.join(""));
+      const base64Content = btoa(binary);
 
       const ghRes = await fetch(`https://api.github.com/repos/${env.GITHUB_REPO}/contents/${mediaKey}`, {
         method: "PUT",
@@ -74,13 +66,13 @@ export async function onRequestPost(context) {
       mediaUrl = `https://cdn.jsdelivr.net/gh/${env.GITHUB_REPO}@main/${mediaKey}`;
     }
 
-    const info = await env.DB.prepare(
+    await env.DB.prepare(
       "INSERT INTO posts (type, title, content, media_url, media_key) VALUES (?, ?, ?, ?, ?)"
     )
       .bind(type, title, content, mediaUrl, mediaKey)
       .run();
 
-    return Response.json({ success: true, id: info.meta?.last_row_id, media_url: mediaUrl });
+    return Response.json({ success: true });
   } catch (err) {
     return Response.json({ success: false, error: err.message }, { status: 500 });
   }
