@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>内容管理后台 · 我们的小时光</title>
+<style>
+  :root {
+    --bg:#faf7f2; --card:#fffdf9; --ink:#3a3330; --ink-soft:#8a7f78;
+    --accent:#b5654a; --accent-deep:#9d5238; --accent-soft:#f0ded5; --line:#ece4db;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--ink); padding:28px 16px 60px; line-height:1.6;
+  }
+  .container { max-width:580px; margin:0 auto; }
+  .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .header h1 { font-family:"Noto Serif SC",serif; font-size:22px; }
+  .header a { color:var(--accent); text-decoration:none; font-size:14px; }
+  .box {
+    background:var(--card); border:1px solid var(--line); border-radius:18px;
+    padding:24px; margin-bottom:20px; box-shadow:0 8px 26px rgba(96,72,58,.06);
+  }
+  label { display:block; font-size:13.5px; font-weight:600; margin:14px 0 6px; color:var(--ink); }
+  input, select, textarea {
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
+    background:#fff; font-size:14.5px; color:var(--ink); font-family:inherit;
+  }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--accent); }
+  .btn {
+    width:100%; padding:13px; background:var(--accent); color:#fff; border:none;
+    border-radius:999px; font-size:15px; font-weight:600; margin-top:22px; cursor:pointer;
+    transition:.2s; box-shadow:0 6px 18px rgba(181,101,74,.25);
+  }
+  .btn:hover { background:var(--accent-deep); }
+  .btn:disabled { opacity:.55; cursor:not-allowed; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .item {
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:12px 0; border-bottom:1px solid var(--line); font-size:14px;
+  }
+  .item:last-child { border-bottom:none; }
+  .badge {
+    font-size:12px; background:var(--accent-soft); color:var(--accent-deep);
+    padding:2px 9px; border-radius:99px; margin-right:6px; white-space:nowrap;
+  }
+  .del-btn {
+    padding:5px 12px; border-radius:99px; border:1px solid #e0b4a8;
+    background:transparent; color:#c94a29; font-size:12.5px; cursor:pointer; flex:none;
+  }
+  .del-btn:hover { background:#fdf0ed; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>✨ 家庭回忆录 · 发布后台</h1>
+    <a href="/">← 返回前台首页</a>
+  </div>
+
+  <div class="box">
+    <label style="margin-top:0">管理密码</label>
+    <input type="password" id="pwd" placeholder="请输入设置的 ADMIN_PASSWORD">
+
+    <label>选择要新增的板块</label>
+    <select id="type" onchange="switchForm()">
+      <option value="photo">📷 照片墙 (上传新照片)</option>
+      <option value="music">🎵 音乐歌单 (上传 MP3 歌曲)</option>
+      <option value="post">📝 随笔文章 (写一段回忆长文)</option>
+      <option value="timeline">⏳ 时光轴 (记录一个重要日子)</option>
+    </select>
+
+    <!-- 公共标题 -->
+    <label id="titleLabel">照片标题</label>
+    <input type="text" id="title" placeholder="例如：湘潭的回忆">
+
+    <!-- 照片专属字段 -->
+    <div id="photoFields">
+      <div class="row">
+        <div>
+          <label>相册分类 (自动生成筛选按钮)</label>
+          <input type="text" id="photoCat" placeholder="如：家庭 / 旅行 / 老照片" value="家庭">
+        </div>
+        <div>
+          <label>拍摄年月</label>
+          <input type="text" id="photoDate" placeholder="如：2026-11">
+        </div>
+      </div>
+      <label>背后的一句话描述</label>
+      <input type="text" id="photoDesc" placeholder="例如：院子里的石榴树又结果了">
+      <label>上传图片文件 (建议压缩至 5MB 以内)</label>
+      <input type="file" id="photoFile" accept="image/*">
+    </div>
+
+    <!-- 音乐专属字段 -->
+    <div id="musicFields" style="display:none">
+      <label>歌手 / 副标题说明</label>
+      <input type="text" id="musicArtist" value="想放给你听">
+      <label>上传 MP3 音频文件 (建议 15MB 以内)</label>
+      <input type="file" id="musicFile" accept="audio/*">
+    </div>
+
+    <!-- 随笔专属字段 -->
+    <div id="postFields" style="display:none">
+      <div class="row">
+        <div>
+          <label>文章标签</label>
+          <input type="text" id="postTag" value="随笔" placeholder="如：随笔 / 日常 / 家庭">
+        </div>
+        <div>
+          <label>日期</label>
+          <input type="text" id="postDate" placeholder="如：2026-11-12">
+        </div>
+      </div>
+      <label>卡片简短摘要 (不填则自动截取正文前 40 字)</label>
+      <input type="text" id="postExcerpt" placeholder="显示在首页卡片上的简短引子……">
+      <label>随笔正文 (回车换行会自动生成段落)</label>
+      <textarea id="postBody" rows="6" placeholder="在这里写下完整的故事..."></textarea>
+    </div>
+
+    <!-- 时光轴专属字段 -->
+    <div id="timelineFields" style="display:none">
+      <label>时间节点标识</label>
+      <input type="text" id="tlDate" placeholder="例如：2026 · 秋">
+      <label>事件描述</label>
+      <textarea id="tlText" rows="3" placeholder="例如：全家人一起去了海边看日出。"></textarea>
+    </div>
+
+    <button class="btn" id="submitBtn" onclick="publish()">立即发布到博客</button>
+  </div>
+
+  <div class="box">
+    <h3 style="font-size:16px;margin-bottom:10px">🗂 已通过后台发布的内容</h3>
+    <div id="list">正在加载...</div>
+  </div>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const pwdInput = $('pwd');
+  pwdInput.value = localStorage.getItem('family_blog_pwd') || '';
+  pwdInput.addEventListener('input', () => localStorage.setItem('family_blog_pwd', pwdInput.value));
+
+  // 默认填入当天日期
+  const today = new Date().toISOString().slice(0, 10);
+  $('postDate').value = today;
+  $('photoDate').value = today.slice(0, 7);
+
+  function switchForm() {
+    const t = $('type').value;
+    $('photoFields').style.display = t === 'photo' ? 'block' : 'none';
+    $('musicFields').style.display = t === 'music' ? 'block' : 'none';
+    $('postFields').style.display = t === 'post' ? 'block' : 'none';
+    $('timelineFields').style.display = t === 'timeline' ? 'block' : 'none';
+
+    const labels = { photo:'照片标题', music:'歌曲名称', post:'随笔标题', timeline:'时光轴事件标题' };
+    $('titleLabel').textContent = labels[t];
+  }
+
+  async function publish() {
+    const pwd = pwdInput.value.trim();
+    const type = $('type').value;
+    const title = $('title').value.trim();
+    if (!pwd) return alert('请先输入管理密码');
+    if (!title) return alert('请填写标题');
+
+    const formData = new FormData();
+    formData.append('type', type);
+    formData.append('title', title);
+
+    let meta = {};
+    if (type === 'photo') {
+      const file = $('photoFile').files[0];
+      if (!file) return alert('请选择要上传的照片文件');
+      formData.append('file', file);
+      meta = {
+        cat: $('photoCat').value.trim() || '日常',
+        date: $('photoDate').value.trim(),
+        desc: $('photoDesc').value.trim()
+      };
+    } else if (type === 'music') {
+      const file = $('musicFile').files[0];
+      if (!file) return alert('请选择要上传的 MP3 文件');
+      formData.append('file', file);
+      meta = { artist: $('musicArtist').value.trim() || '想放给你听' };
+    } else if (type === 'post') {
+      const rawBody = $('postBody').value.trim();
+      if (!rawBody) return alert('请填写随笔正文');
+      const htmlBody = rawBody.split(/\n+/).map(p => `<p>${p}</p>`).join('');
+      const excerpt = $('postExcerpt').value.trim() || (rawBody.slice(0, 42) + '……');
+      meta = {
+        tag: $('postTag').value.trim() || '随笔',
+        date: $('postDate').value.trim() || today,
+        excerpt,
+        content: htmlBody
+      };
+    } else if (type === 'timeline') {
+      meta = {
+        date: $('tlDate').value.trim() || today.slice(0, 4),
+        text: $('tlText').value.trim()
+      };
+    }
+
+    formData.append('content', JSON.stringify(meta));
+
+    const btn = $('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '正在上传并写入数据库，请稍候...';
+
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'X-Admin-Password': pwd },
+        body: formData
+      });
+      const json = await res.json();
+      if (json.success) {
+        alert('发布成功！刷新首页即可看到新内容。');
+        $('title').value = '';
+        $('photoDesc').value = '';
+        $('photoFile').value = '';
+        $('musicFile').value = '';
+        $('postExcerpt').value = '';
+        $('postBody').value = '';
+        $('tlText').value = '';
+        loadList();
+      } else {
+        alert('发布失败：' + json.error);
+      }
+    } catch (e) {
+      alert('网络请求异常：' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '立即发布到博客';
+    }
+  }
+
+  async function loadList() {
+    const box = $('list');
+    try {
+      const res = await fetch('/api/posts');
+      const json = await res.json();
+      if (!json.success || !json.data.length) {
+        box.innerHTML = '<p style="color:#8a7f78;font-size:13.5px">暂未通过后台新增数据（前台目前展示内置初始回忆）</p>';
+        return;
+      }
+      const typeNames = { photo:'照片', music:'音乐', post:'随笔', timeline:'时光轴' };
+      box.innerHTML = json.data.map(item => `
+        <div class="item">
+          <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            <span class="badge">${typeNames[item.type] || item.type}</span>
+            <strong>${item.title}</strong>
+          </div>
+          <button class="del-btn" onclick="delItem(${item.id})">删除</button>
+        </div>
+      `).join('');
+    } catch (e) {
+      box.innerHTML = '<p style="color:#c94a29;font-size:13.5px">读取列表失败</p>';
+    }
+  }
+
+  async function delItem(id) {
+    if (!confirm('确定要删除这条记录吗？')) return;
+    const pwd = pwdInput.value.trim();
+    if (!pwd) return alert('请先在上方输入管理密码');
+    const res = await fetch(`/api/posts?id=${id}`, {
+      method: 'DELETE',
+      headers: { 'X-Admin-Password': pwd }
+    });
+    const json = await res.json();
+    if (json.success) loadList();
+    else alert('删除失败：' + json.error);
+  }
+
+  loadList();
+</script>
+</body>
+</html>

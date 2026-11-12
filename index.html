@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我们的小时光 · 家庭回忆博客</title>
+<style>
+/* ============ 基础变量 ============ */
+:root{
+  --bg:#faf7f2;
+  --card:#fffdf9;
+  --ink:#3a3330;
+  --ink-soft:#8a7f78;
+  --accent:#b5654a;
+  --accent-deep:#9d5238;
+  --accent-soft:#f0ded5;
+  --line:#ece4db;
+  --radius:18px;
+  --shadow:0 10px 34px rgba(96,72,58,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:86px; /* 给底部播放器留位置 */
+}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer}
+section[id]{scroll-margin-top:74px}
+::selection{background:var(--accent-soft);color:var(--accent-deep)}
+
+/* ============ 导航 ============ */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(250,247,242,.86);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  max-width:1180px;margin:0 auto;padding:13px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+}
+.brand{
+  font-family:"Noto Serif SC","Songti SC",serif;
+  font-size:19px;font-weight:700;letter-spacing:1px;white-space:nowrap;
+}
+.brand span{color:var(--accent)}
+.nav-links{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{
+  padding:6px 13px;border-radius:999px;text-decoration:none;
+  color:var(--ink-soft);font-size:14px;white-space:nowrap;transition:.22s;
+}
+.nav-links a:hover{background:var(--accent-soft);color:var(--accent-deep)}
+
+/* ============ Hero ============ */
+.hero{
+  position:relative;min-height:74vh;display:grid;place-items:center;
+  text-align:center;padding:90px 24px 100px;overflow:hidden;
+  background:
+    radial-gradient(circle at 18% 22%, #f5e3d8 0%, transparent 52%),
+    radial-gradient(circle at 82% 26%, #e7ede4 0%, transparent 48%),
+    radial-gradient(circle at 50% 96%, #f8ecdb 0%, transparent 58%),
+    var(--bg);
+}
+.hero-inner{position:relative;z-index:2;max-width:720px}
+.hero-kicker{
+  font-size:12.5px;letter-spacing:.42em;color:var(--accent);
+  margin-bottom:20px;text-indent:.42em;
+}
+.hero h1{
+  font-family:"Noto Serif SC","Songti SC",serif;
+  font-size:clamp(38px,7.5vw,70px);
+  letter-spacing:.12em;line-height:1.16;font-weight:700;
+  text-indent:.12em;
+}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero-desc{
+  margin-top:22px;color:var(--ink-soft);font-size:15.5px;line-height:2;
+}
+.hero-actions{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{
+  display:inline-block;padding:12px 30px;border-radius:999px;
+  text-decoration:none;font-size:15px;transition:.26s;border:1px solid transparent;
+}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 10px 24px rgba(181,101,74,.26)}
+.btn-primary:hover{background:var(--accent-deep);transform:translateY(-2px)}
+.btn-ghost{border-color:var(--line);color:var(--ink-soft);background:rgba(255,255,255,.6)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ============ 通用区块 ============ */
+.section{max-width:1180px;margin:0 auto;padding:76px 24px}
+.section-head{text-align:center;margin-bottom:42px}
+.section-head h2{
+  font-family:"Noto Serif SC","Songti SC",serif;
+  font-size:clamp(24px,3.6vw,32px);letter-spacing:.14em;font-weight:700;
+}
+.section-head h2::after{
+  content:"";display:block;width:34px;height:2px;border-radius:2px;
+  background:var(--accent);margin:14px auto 0;opacity:.7;
+}
+.section-head p{color:var(--ink-soft);font-size:14.5px;margin-top:14px}
+
+/* ==========================================================
+   相册
+   ========================================================== */
+const photoGrid = $('photoGrid');
+const filtersEl = $('filters');
+let currentPhotos = PHOTOS;
+let lbIndex = 0;
+
+function renderFilters(){
+  const cats = ['全部', ...new Set(PHOTOS.map(p=>p.cat))];
+  filtersEl.innerHTML = cats.map((c,i)=>
+    `<button class="chip${i===0?' active':''}" data-cat="${c}">${c}</button>`
+  ).join('');
+}
+
+function renderPhotos(list){
+  currentPhotos = list;
+  if(!list.length){
+    photoGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#8a7f78;padding:40px 0">这里还没有照片</p>';
+    return;
+  }
+  photoGrid.innerHTML = list.map((p,i)=>`
+    <figure class="photo reveal" data-i="${i}">
+      <img src="${p.src}" alt="${p.title}" loading="lazy">
+      <figcaption class="photo-cap">${p.title}</figcaption>
+    </figure>
+  `).join('');
+  observeReveal();
+}
+
+filtersEl.addEventListener('click', e=>{
+  const btn = e.target.closest('.chip');
+  if(!btn) return;
+  filtersEl.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  const cat = btn.dataset.cat;
+  renderPhotos(cat === '全部' ? PHOTOS : PHOTOS.filter(p=>p.cat === cat));
+});
+
+photoGrid.addEventListener('click', e=>{
+  const fig = e.target.closest('.photo');
+  if(!fig) return;
+  openLightbox(Number(fig.dataset.i));
+});
+
+/* ---------- 灯箱 ---------- */
+const lightbox = $('lightbox');
+const lbImg = $('lbImg'), lbTitle = $('lbTitle'), lbDesc = $('lbDesc');
+
+function openLightbox(i){
+  lbIndex = i;
+  updateLightbox();
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function updateLightbox(){
+  const p = currentPhotos[lbIndex];
+  if(!p) return;
+  lbImg.src = p.src;
+  lbImg.alt = p.title;
+  lbTitle.textContent = p.title;
+  lbDesc.textContent = [p.desc, p.date].filter(Boolean).join(' · ');
+}
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function stepLightbox(dir){
+  const n = currentPhotos.length;
+  if(!n) return;
+  lbIndex = (lbIndex + dir + n) % n;
+  updateLightbox();
+}
+$('lbClose').addEventListener('click', closeLightbox);
+$('lbPrev').addEventListener('click', ()=>stepLightbox(-1));
+$('lbNext').addEventListener('click', ()=>stepLightbox(1));
+lightbox.addEventListener('click', e=>{ if(e.target === lightbox) closeLightbox(); });
+
+document.addEventListener('keydown', e=>{
+  if(lightbox.classList.contains('open')){
+    if(e.key === 'Escape') closeLightbox();
+    if(e.key === 'ArrowLeft') stepLightbox(-1);
+    if(e.key === 'ArrowRight') stepLightbox(1);
+  }
+  if(e.key === 'Escape' && $('postModal').classList.contains('open')) closePost();
+});
+
+/* ==========================================================
+   音乐播放器
+   ========================================================== */
+const audio = new Audio();
+audio.volume = 0.8;
+
+const pPlay = $('pPlay'), pTitle = $('pTitle'), pArtist = $('pArtist'),
+      pCover = $('pCover'), pBar = $('pBar'), pFill = $('pFill'),
+      pTime = $('pTime'), pVol = $('pVol'),
+      songListEl = $('songList');
+
+const ICON_PLAY  = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+
+let songIndex = 0;
+let loaded = false;
+let playing = false;
+
+function renderSongs(){
+  songListEl.innerHTML = SONGS.map((s,i)=>`
+    <div class="song${i===songIndex?' playing':''}" data-i="${i}">
+      <div class="song-no">${i+1}</div>
+      <div class="song-cover">${s.title.slice(0,1)}</div>
+      <div class="song-meta">
+        <div class="song-title">${s.title}</div>
+        <div class="song-artist">${s.artist}</div>
+      </div>
+      <div class="song-bars"><i></i><i></i><i></i></div>
+    </div>
+  `).join('');
+}
+
+function updatePlayerUI(){
+  const s = SONGS[songIndex];
+  if(!s) return;
+  pTitle.textContent = s.title;
+  pArtist.textContent = s.artist;
+  pCover.textContent = s.title.slice(0,1);
+}
+
+function setPlayIcon(isPlaying){
+  playing = isPlaying;
+  pPlay.innerHTML = isPlaying ? ICON_PAUSE : ICON_PLAY;
+  const row = songListEl.querySelector('.song.playing');
+  if(row){
+    row.classList.toggle('paused', !isPlaying);
+  }
+}
+
+function playAudio(){
+  audio.play().then(()=>setPlayIcon(true)).catch(()=>{
+    setPlayIcon(false);
+    toast('播放失败：请确认音频文件或网络链接有效');
+  });
+}
+
+function loadSong(i, autoplay){
+  songIndex = (i + SONGS.length) % SONGS.length;
+  loaded = true;
+  audio.src = SONGS[songIndex].src;
+  updatePlayerUI();
+  renderSongs();
+  pFill.style.width = '0%';
+  pTime.textContent = '0:00 / 0:00';
+  if(autoplay) playAudio();
+}
+
+function togglePlay(){
+  if(!loaded){ loadSong(songIndex, true); return; }
+  if(audio.paused) playAudio();
+  else audio.pause();
+}
+
+pPlay.addEventListener('click', togglePlay);
+$('pNext').addEventListener('click', ()=>loadSong(songIndex + 1, true));
+$('pPrev').addEventListener('click', ()=>loadSong(songIndex - 1, true));
+
+songListEl.addEventListener('click', e=>{
+  const row = e.target.closest('.song');
+  if(!row) return;
+  const i = Number(row.dataset.i);
+  if(i === songIndex && loaded){
+    togglePlay();
+  }else{
+    loadSong(i, true);
+  }
+});
+
+pBar.addEventListener('click', e=>{
+  if(!audio.duration) return;
+  const rect = pBar.getBoundingClientRect();
+  const ratio = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+  audio.currentTime = ratio * audio.duration;
+});
+
+pVol.addEventListener('input', ()=>{ audio.volume = Number(pVol.value); });
+
+audio.addEventListener('play', ()=>setPlayIcon(true));
+audio.addEventListener('pause', ()=>setPlayIcon(false));
+audio.addEventListener('timeupdate', ()=>{
+  if(!audio.duration) return;
+  pFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  pTime.textContent = fmtTime(audio.currentTime) + ' / ' + fmtTime(audio.duration);
+});
+audio.addEventListener('ended', ()=>loadSong(songIndex + 1, true));
+audio.addEventListener('error', ()=>{
+  if(playing){
+    setPlayIcon(false);
+    toast('这首歌暂时放不出来，请检查音频地址');
+  }
+});
+
+/* ==========================================================
+   文章与时光轴渲染函数
+   ========================================================== */
+const postListEl = $('postList');
+const postModal = $('postModal');
+
+function renderPosts(){
+  postListEl.innerHTML = POSTS.map((p,i)=>`
+    <article class="post reveal" data-i="${i}">
+      <div class="post-meta"><span class="tag">${p.tag}</span><time>${p.date}</time></div>
+      <h3>${p.title}</h3>
+      <p>${p.excerpt}</p>
+      <span class="more">读下去 →</span>
+    </article>
+  `).join('');
+  observeReveal();
+}
+
+postListEl.addEventListener('click', e=>{
+  const card = e.target.closest('.post');
+  if(!card) return;
+  openPost(Number(card.dataset.i));
+});
+
+function openPost(i){
+  const p = POSTS[i];
+  if(!p) return;
+  $('mMeta').innerHTML = `<span class="tag">${p.tag}</span><time>${p.date}</time>`;
+  $('mTitle').textContent = p.title;
+  $('mBody').innerHTML = p.content;
+  postModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  postModal.querySelector('.modal-box').scrollTop = 0;
+}
+function closePost(){
+  postModal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+$('mClose').addEventListener('click', closePost);
+postModal.addEventListener('click', e=>{ if(e.target === postModal) closePost(); });
+
+function renderTimeline(){
+  $('timelineList').innerHTML = TIMELINE.map(t=>`
+    <div class="tl-item reveal">
+      <div class="tl-date">${t.date}</div>
+      <h3>${t.title}</h3>
+      <p>${t.text}</p>
+    </div>
+  `).join('');
+  observeReveal();
+}
+
+/* ==========================================================
+   初始化：先渲染本地初始数据，再拉取云端数据库合并
+   ========================================================== */
+function renderAll(){
+  renderFilters();
+  renderPhotos(PHOTOS);
+  renderSongs();
+  updatePlayerUI();
+  renderPosts();
+  renderTimeline();
+}
+
+async function syncFromCloud(){
+  try {
+    const res = await fetch('/api/posts');
+    const json = await res.json();
+    if (!json.success || !Array.isArray(json.data)) return;
+
+    // 倒序遍历让最新发布的排在最前面
+    json.data.slice().reverse().forEach(row => {
+      let meta = {};
+      try { meta = JSON.parse(row.content || '{}'); } catch(e){}
+
+      if (row.type === 'photo' && row.media_url) {
+        PHOTOS.unshift({
+          src: row.media_url,
+          title: row.title,
+          desc: meta.desc || '',
+          cat: meta.cat || '日常',
+          date: meta.date || ''
+        });
+      } else if (row.type === 'music' && row.media_url) {
+        SONGS.unshift({
+          title: row.title,
+          artist: meta.artist || '想放给你听',
+          src: row.media_url
+        });
+      } else if (row.type === 'post') {
+        POSTS.unshift({
+          title: row.title,
+          date: meta.date || (row.created_at || '').slice(0,10),
+          tag: meta.tag || '随笔',
+          excerpt: meta.excerpt || '',
+          content: meta.content || `<p>${row.content}</p>`
+        });
+      } else if (row.type === 'timeline') {
+        TIMELINE.unshift({
+          date: meta.date || '',
+          title: row.title,
+          text: meta.text || ''
+        });
+      }
+    });
+
+    renderAll();
+  } catch (e) {
+    // 本地直接双击预览时忽略接口报错
+  }
+}
+
+renderAll();
+syncFromCloud();
+</script>
+</body>
+</html>
