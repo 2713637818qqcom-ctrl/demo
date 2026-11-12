@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NAV HUB · 我的网址导航</title>
+<style>
+/* ============ 变量 ============ */
+:root{
+  --bg:#070b10;
+  --panel:#0b111a;
+  --panel-2:#0e1520;
+  --card:#101823;
+  --line:#1c2635;
+  --line-soft:#151d29;
+  --ink:#e6edf6;
+  --ink-soft:#8b9bb0;
+  --ink-dim:#5f6f84;
+  --accent:#38bdf8;
+  --accent-2:#a855f7;
+  --accent-3:#22d3ee;
+  --radius:16px;
+  --side-w:266px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.6;min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(1100px 620px at 82% -12%, rgba(56,189,248,.10), transparent 60%),
+    radial-gradient(900px 520px at -6% 104%, rgba(168,85,247,.09), transparent 60%);
+  background-attachment:fixed;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(56,189,248,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,.04) 1px, transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(circle at 50% 20%, #000 0%, transparent 78%);
+  -webkit-mask-image:radial-gradient(circle at 50% 20%, #000 0%, transparent 78%);
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::selection{background:rgba(56,189,248,.3);color:#fff}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#1e2a3a;border-radius:9px}
+::-webkit-scrollbar-thumb:hover{background:#2a3a4e}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ============ 侧边栏 ============ */
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:var(--side-w);z-index:50;
+  display:flex;flex-direction:column;
+  background:rgba(9,14,21,.92);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-right:1px solid var(--line-soft);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.side-head{padding:20px 20px 16px;border-bottom:1px solid var(--line-soft);flex:none}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  width:40px;height:40px;border-radius:11px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  box-shadow:0 8px 22px rgba(56,189,248,.32);
+  color:#06121c;font-weight:800;font-size:19px;letter-spacing:-.5px;
+}
+.brand-txt{display:flex;flex-direction:column;line-height:1.25;font-weight:700;font-size:15px;letter-spacing:.14em}
+.brand-txt small{font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--ink-dim);margin-top:2px}
+
+.side-scroll{flex:1;overflow-y:auto;padding:18px 14px 10px}
+.side-label{
+  font-size:10.5px;letter-spacing:.22em;color:var(--ink-dim);
+  text-transform:uppercase;padding:0 10px;margin:14px 0 9px;font-weight:600;
+}
+.side-label:first-child{margin-top:0}
+.cats{display:flex;flex-direction:column;gap:2px}
+.cat-btn{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  width:100%;padding:9px 11px;border-radius:10px;
+  font-size:13.5px;color:var(--ink-soft);text-align:left;
+  border:1px solid transparent;transition:.18s;position:relative;
+}
+.cat-btn:hover{background:rgba(56,189,248,.06);color:var(--ink)}
+.cat-btn.active{
+  background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.22);
+  color:#7dd3fc;font-weight:600;
+}
+.cat-btn.active::before{
+  content:"";position:absolute;left:-14px;top:50%;transform:translateY(-50%);
+  width:3px;height:18px;border-radius:0 3px 3px 0;
+  background:linear-gradient(var(--accent-3),var(--accent-2));
+}
+.cat-count{
+  font-size:11px;font-variant-numeric:tabular-nums;color:var(--ink-dim);
+  background:rgba(255,255,255,.04);padding:1px 7px;border-radius:99px;
+}
+.cat-btn.active .cat-count{color:#7dd3fc;background:rgba(56,189,248,.14)}
+
+.letters{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding:0 6px}
+.letter-btn{
+  height:30px;border-radius:8px;font-size:12px;font-weight:600;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color:var(--ink-soft);border:1px solid var(--line-soft);
+  display:grid;place-items:center;transition:.16s;
+}
+.letter-btn:hover:not(:disabled){border-color:rgba(56,189,248,.4);color:var(--accent);background:rgba(56,189,248,.06)}
+.letter-btn.active{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#06121c;border-color:transparent;box-shadow:0 4px 14px rgba(56,189,248,.3);
+}
+.letter-btn:disabled{opacity:.22;cursor:not-allowed}
+
+.side-foot{
+  flex:none;padding:14px 20px;border-top:1px solid var(--line-soft);
+  font-size:11.5px;color:var(--ink-dim);display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.side-foot b{color:var(--ink-soft);font-weight:600}
+.clock{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.06em;color:var(--accent)}
+
+/* ============ 主区域 ============ */
+.main{margin-left:var(--side-w);position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{
+  position:sticky;top:0;z-index:30;
+  display:flex;align-items:center;gap:14px;
+  padding:13px 28px;height:66px;
+  background:rgba(7,11,16,.72);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line-soft);
+}
+.menu-btn{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);place-items:center;flex:none}
+.menu-btn svg{width:19px;height:19px;stroke:var(--ink-soft);fill:none;stroke-width:1.8}
+
+.search{
+  flex:1;max-width:560px;display:flex;align-items:center;gap:11px;
+  padding:0 14px;height:42px;border-radius:12px;
+  background:var(--panel-2);border:1px solid var(--line);
+  transition:.2s;
+}
+.search:focus-within{border-color:rgba(56,189,248,.55);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
+.search svg{width:17px;height:17px;flex:none;stroke:var(--ink-dim);fill:none;stroke-width:1.9}
+.search input{
+  flex:1;min-width:0;background:none;border:none;outline:none;
+  color:var(--ink);font-size:14px;font-family:inherit;
+}
+.search input::placeholder{color:var(--ink-dim)}
+kbd{
+  font-family:ui-monospace,monospace;font-size:11px;color:var(--ink-dim);
+  border:1px solid var(--line);border-radius:6px;padding:2px 7px;background:rgba(255,255,255,.03);
+}
+.top-links{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none}
+.top-link{
+  font-size:13px;color:var(--ink-soft);padding:8px 15px;border-radius:9px;
+  border:1px solid var(--line);transition:.2s;white-space:nowrap;
+}
+.top-link:hover{color:var(--accent);border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.06)}
+
+.content{flex:1;padding:34px 28px 80px;max-width:1440px;width:100%;margin:0 auto}
+.page-head{margin-bottom:8px}
+.page-head .kicker{
+  font-size:11px;letter-spacing:.34em;color:var(--accent);
+  font-family:ui-monospace,monospace;margin-bottom:12px;
+}
+.page-head h1{font-size:clamp(28px,4vw,40px);letter-spacing:.04em;font-weight:700;line-height:1.2}
+.page-head h1 em{
+  font-style:normal;
+  background:linear-gradient(100deg,var(--accent-3),var(--accent),var(--accent-2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.page-head p{color:var(--ink-soft);font-size:13.5px;margin-top:12px}
+.page-head p b{color:var(--accent);font-weight:600}
+
+/* ============ 分组 ============ */
+.group{margin-top:38px;animation:fade .45s ease both}
+.group-head{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.group-head h2{font-size:17px;font-weight:650;letter-spacing:.06em;display:flex;align-items:center;gap:11px}
+.group-head h2::before{
+  content:"";width:3px;height:17px;border-radius:2px;
+  background:linear-gradient(var(--accent-3),var(--accent-2));
+  box-shadow:0 0 12px rgba(56,189,248,.6);
+}
+.group-count{
+  font-size:11px;font-family:ui-monospace,monospace;color:var(--ink-dim);
+  border:1px solid var(--line-soft);border-radius:99px;padding:1px 9px;
+}
+.group-head i{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:13px}
+
+.card{
+  position:relative;display:flex;align-items:flex-start;gap:13px;
+  padding:15px;border-radius:var(--radius);
+  background:linear-gradient(155deg,#111a25,#0c121b);
+  border:1px solid var(--line);
+  transition:transform .22s cubic-bezier(.2,.7,.3,1),border-color .22s,box-shadow .22s;
+  animation:cardIn .4s ease both;overflow:hidden;
+}
+.card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(300px 120px at 12% 0%, rgba(56,189,248,.1), transparent 70%);
+  opacity:0;transition:opacity .25s;
+}
+.card:hover{
+  transform:translateY(-3px);
+  border-color:rgba(56,189,248,.42);
+  box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 0 1px rgba(56,189,248,.08),0 0 26px rgba(56,189,248,.1);
+}
+.card:hover::after{opacity:1}
+
+.icon{
+  position:relative;width:42px;height:42px;border-radius:11px;flex:none;
+  overflow:hidden;background:#0a0f16;border:1px solid rgba(255,255,255,.06);
+}
+.icon .mono{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-size:18px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,hsl(var(--h) 72% 42%),hsl(calc(var(--h) + 45) 78% 52%));
+}
+.icon img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:5px;background:#0b1119}
+
+.card-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.card-name{font-size:14.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-desc{font-size:12.3px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-domain{
+  font-size:10.5px;color:var(--ink-dim);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.card-arrow{
+  position:absolute;top:14px;right:13px;width:15px;height:15px;
+  stroke:var(--ink-dim);fill:none;stroke-width:1.8;
+  opacity:0;transform:translate(-3px,3px);transition:.22s;
+}
+.card:hover .card-arrow{opacity:1;transform:none;stroke:var(--accent)}
+
+/* ============ 空状态 ============ */
+.empty{
+  margin-top:70px;text-align:center;padding:56px 24px;
+  border:1px dashed var(--line);border-radius:20px;
+  background:rgba(14,21,32,.4);
+}
+.empty svg{width:46px;height:46px;stroke:var(--ink-dim);fill:none;stroke-width:1.4;margin-bottom:16px}
+.empty h3{font-size:17px;margin-bottom:8px}
+.empty p{color:var(--ink-soft);font-size:13.5px;margin-bottom:20px}
+.empty button{
+  padding:9px 22px;border-radius:99px;font-size:13.5px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#06121c;font-weight:600;transition:.2s;
+}
+.empty button:hover{filter:brightness(1.1);transform:translateY(-1px)}
+
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.overlay{
+  display:none;position:fixed;inset:0;z-index:45;
+  background:rgba(3,6,10,.62);backdrop-filter:blur(2px);
+}
+.overlay.show{display:block}
+
+/* ============ 响应式 ============ */
+@media (max-width:900px){
+  .sidebar{transform:translateX(-100%);box-shadow:0 0 40px rgba(0,0,0,.6)}
+  .sidebar.open{transform:none}
+  .main{margin-left:0}
+  .menu-btn{display:grid}
+  .topbar{padding:12px 16px;gap:10px}
+  .content{padding:26px 16px 70px}
+  .top-links .top-link.internal{display:none}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:11px}
+}
+@media (max-width:480px){
+  .grid{grid-template-columns:1fr}
+  .search kbd{display:none}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="side-head">
+    <div class="brand">
+      <span class="logo">N</span>
+      <span class="brand-txt">NAV HUB<small>我的网址导航</small></span>
+    </div>
+  </div>
+
+  <div class="side-scroll">
+    <div class="side-label">分类</div>
+    <nav class="cats" id="catList"></nav>
+
+    <div class="side-label">首字母</div>
+    <div class="letters" id="letterList"></div>
+  </div>
+
+  <div class="side-foot">
+    <span>收录 <b id="totalCount">0</b> 站</span>
+    <span class="clock" id="clock">--:--:--</span>
+  </div>
+</aside>
+
+<div class="overlay" id="overlay"></div>
+
+<main class="main">
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn" aria-label="打开菜单">
+      <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/></svg>
+    </button>
+    <div class="search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
+      <input id="q" type="text" placeholder="搜索站点、网址或描述…" autocomplete="off" spellcheck="false">
+      <kbd>/</kbd>
+    </div>
+    <div class="top-links">
+      <a class="top-link internal" href="/">回忆博客</a>
+      <a class="top-link" href="/admin.html">后台</a>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="page-head">
+      <div class="kicker">NAVIGATION // 2026</div>
+      <h1>我的<em>网址导航</em></h1>
+      <p>把常用的网站收进一个地方 · 共 <b id="heroCount">0</b> 个站点，<b id="heroCat">0</b> 个分类</p>
+    </div>
+
+    <div id="results"></div>
+  </div>
+</main>
+
+<script>
+/* ==========================================================
+   站点数据 · 想增删改直接编辑下面这个数组即可
+   字段：cat 分类 / name 名称 / url 网址 / desc 描述
+   ========================================================== */
+const CATEGORIES = ["常用导航","开发工具","AI 智能","设计灵感","影音娱乐","学习充电","效率工具","购物生活","资讯阅读"];
+
+const RAW_LINKS = [
+  // ---------- 常用导航 ----------
+  { cat:"常用导航", name:"百度",       url:"https://www.baidu.com",        desc:"中文搜索引擎" },
+  { cat:"常用导航", name:"必应",       url:"https://www.bing.com",         desc:"微软国际搜索" },
+  { cat:"常用导航", name:"谷歌",       url:"https://www.google.com",       desc:"全球搜索引擎" },
+  { cat:"常用导航", name:"知乎",       url:"https://www.zhihu.com",        desc:"问答与知识社区" },
+  { cat:"常用导航", name:"微博",       url:"https://weibo.com",            desc:"中文社交媒体" },
+  { cat:"常用导航", name:"哔哩哔哩",   url:"https://www.bilibili.com",     desc:"年轻人的视频社区" },
+  { cat:"常用导航", name:"淘宝",       url:"https://www.taobao.com",       desc:"综合网络购物" },
+  { cat:"常用导航", name:"京东",       url:"https://www.jd.com",           desc:"品质自营购物" },
+
+  // ---------- 开发工具 ----------
+  { cat:"开发工具", name:"GitHub",        url:"https://github.com",                 desc:"全球代码托管平台" },
+  { cat:"开发工具", name:"GitLab",        url:"https://gitlab.com",                 desc:"DevOps 一体化平台" },
+  { cat:"开发工具", name:"Gitee",         url:"https://gitee.com",                  desc:"国内代码托管" },
+  { cat:"开发工具", name:"Stack Overflow",url:"https://stackoverflow.com",          desc:"程序员技术问答" },
+  { cat:"开发工具", name:"MDN",           url:"https://developer.mozilla.org",      desc:"Web 开发权威文档" },
+  { cat:"开发工具", name:"npm",           url:"https://www.npmjs.com",              desc:"JavaScript 包管理" },
+  { cat:"开发工具", name:"Can I use",     url:"https://caniuse.com",                desc:"浏览器兼容查询" },
+  { cat:"开发工具", name:"Cloudflare",    url:"https://www.cloudflare.com",         desc:"CDN 与边缘计算" },
+  { cat:"开发工具", name:"Vercel",        url:"https://vercel.com",                 desc:"前端一键部署" },
+  { cat:"开发工具", name:"掘金",          url:"https://juejin.cn",                   desc:"开发者技术社区" },
+  { cat:"开发工具", name:"CSDN",          url:"https://www.csdn.net",               desc:"中文技术博客" },
+  { cat:"开发工具", name:"博客园",        url:"https://www.cnblogs.com",            desc:"开发者网上家园" },
+
+  // ---------- AI 智能 ----------
+  { cat:"AI 智能", name:"ChatGPT",     url:"https://chatgpt.com",           desc:"OpenAI 对话助手" },
+  { cat:"AI 智能", name:"Claude",      url:"https://claude.ai",             desc:"Anthropic AI 助手" },
+  { cat:"AI 智能", name:"Gemini",      url:"https://gemini.google.com",     desc:"谷歌多模态 AI" },
+  { cat:"AI 智能", name:"DeepSeek",    url:"https://chat.deepseek.com",     desc:"深度求索大模型" },
+  { cat:"AI 智能", name:"Kimi",        url:"https://kimi.moonshot.cn",      desc:"长文本 AI 助手" },
+  { cat:"AI 智能", name:"豆包",        url:"https://www.doubao.com",        desc:"字节跳动 AI 助手" },
+  { cat:"AI 智能", name:"通义千问",    url:"https://tongyi.aliyun.com",     desc:"阿里云大模型" },
+  { cat:"AI 智能", name:"文心一言",    url:"https://yiyan.baidu.com",       desc:"百度大模型" },
+  { cat:"AI 智能", name:"Hugging Face",url:"https://huggingface.co",        desc:"AI 模型与数据集" },
+  { cat:"AI 智能", name:"Midjourney",  url:"https://www.midjourney.com",    desc:"AI 绘画生成" },
+
+  // ---------- 设计灵感 ----------
+  { cat:"设计灵感", name:"Figma",       url:"https://www.figma.com",        desc:"在线协作设计" },
+  { cat:"设计灵感", name:"Canva",       url:"https://www.canva.cn",         desc:"在线平面设计" },
+  { cat:"设计灵感", name:"Dribbble",    url:"https://dribbble.com",         desc:"设计师作品集" },
+  { cat:"设计灵感", name:"Behance",     url:"https://www.behance.net",      desc:"Adobe 创意作品" },
+  { cat:"设计灵感", name:"站酷",        url:"https://www.zcool.com.cn",     desc:"中国设计师社区" },
+  { cat:"设计灵感", name:"花瓣",        url:"https://huaban.com",           desc:"设计素材采集" },
+  { cat:"设计灵感", name:"Unsplash",    url:"https://unsplash.com",         desc:"免费高清图片" },
+  { cat:"设计灵感", name:"Iconify",     url:"https://iconify.design",       desc:"海量开源图标" },
+  { cat:"设计灵感", name:"Google Fonts",url:"https://fonts.google.com",     desc:"免费开源字体" },
+
+  // ---------- 影音娱乐 ----------
+  { cat:"影音娱乐", name:"YouTube",    url:"https://www.youtube.com",     desc:"全球视频平台" },
+  { cat:"影音娱乐", name:"Netflix",    url:"https://www.netflix.com",     desc:"影视流媒体" },
+  { cat:"影音娱乐", name:"腾讯视频",   url:"https://v.qq.com",            desc:"影视综艺" },
+  { cat:"影音娱乐", name:"爱奇艺",     url:"https://www.iqiyi.com",       desc:"影视综艺" },
+  { cat:"影音娱乐", name:"优酷",       url:"https://www.youku.com",       desc:"影视综艺" },
+  { cat:"影音娱乐", name:"网易云音乐", url:"https://music.163.com",       desc:"音乐与乐评社区" },
+  { cat:"影音娱乐", name:"QQ音乐",     url:"https://y.qq.com",            desc:"在线音乐平台" },
+  { cat:"影音娱乐", name:"Spotify",    url:"https://open.spotify.com",    desc:"全球音乐流媒体" },
+  { cat:"影音娱乐", name:"豆瓣电影",   url:"https://movie.douban.com",    desc:"影评与评分" },
+
+  // ---------- 学习充电 ----------
+  { cat:"学习充电", name:"中国大学MOOC",url:"https://www.icourse163.org", desc:"高校在线课程" },
+  { cat:"学习充电", name:"网易公开课",  url:"https://open.163.com",       desc:"名校公开课" },
+  { cat:"学习充电", name:"Coursera",    url:"https://www.coursera.org",   desc:"国际在线课程" },
+  { cat:"学习充电", name:"Khan Academy",url:"https://www.khanacademy.org",desc:"免费公益学习" },
+  { cat:"学习充电", name:"维基百科",    url:"https://zh.wikipedia.org",   desc:"自由的百科全书" },
+  { cat:"学习充电", name:"百度百科",    url:"https://baike.baidu.com",    desc:"中文百科全书" },
+  { cat:"学习充电", name:"菜鸟教程",    url:"https://www.runoob.com",     desc:"编程入门教程" },
+  { cat:"学习充电", name:"廖雪峰的教程",url:"https://liaoxuefeng.com",    desc:"通俗编程教程" },
+
+  // ---------- 效率工具 ----------
+  { cat:"效率工具", name:"百度网盘",   url:"https://pan.baidu.com",    desc:"云端文件存储" },
+  { cat:"效率工具", name:"阿里云盘",   url:"https://www.alipan.com",   desc:"不限速云盘" },
+  { cat:"效率工具", name:"腾讯文档",   url:"https://docs.qq.com",      desc:"在线协作文档" },
+  { cat:"效率工具", name:"石墨文档",   url:"https://shimo.im",         desc:"多人协作办公" },
+  { cat:"效率工具", name:"语雀",       url:"https://www.yuque.com",    desc:"专业知识库" },
+  { cat:"效率工具", name:"Notion",     url:"https://www.notion.so",    desc:"全能笔记与协作" },
+  { cat:"效率工具", name:"草料二维码", url:"https://cli.im",           desc:"二维码生成器" },
+  { cat:"效率工具", name:"TinyPNG",    url:"https://tinypng.com",      desc:"图片在线压缩" },
+  { cat:"效率工具", name:"JSON 格式化",url:"https://www.json.cn",      desc:"JSON 校验格式化" },
+  { cat:"效率工具", name:"Regex101",   url:"https://regex101.com",     desc:"正则表达式调试" },
+
+  // ---------- 购物生活 ----------
+  { cat:"购物生活", name:"天猫",     url:"https://www.tmall.com",     desc:"品牌旗舰购物" },
+  { cat:"购物生活", name:"拼多多",   url:"https://www.pinduoduo.com", desc:"拼团特价购物" },
+  { cat:"购物生活", name:"美团",     url:"https://www.meituan.com",   desc:"本地生活服务" },
+  { cat:"购物生活", name:"大众点评", url:"https://www.dianping.com",  desc:"吃喝玩乐指南" },
+  { cat:"购物生活", name:"携程",     url:"https://www.ctrip.com",     desc:"旅行机票酒店" },
+  { cat:"购物生活", name:"高德地图", url:"https://www.amap.com",      desc:"地图与出行导航" },
+  { cat:"购物生活", name:"12306",    url:"https://www.12306.cn",      desc:"铁路购票官网" },
+  { cat:"购物生活", name:"支付宝",   url:"https://www.alipay.com",    desc:"生活缴费与服务" },
+
+  // ---------- 资讯阅读 ----------
+  { cat:"资讯阅读", name:"新浪新闻", url:"https://news.sina.com.cn",  desc:"综合新闻门户" },
+  { cat:"资讯阅读", name:"腾讯新闻", url:"https://news.qq.com",       desc:"综合新闻门户" },
+  { cat:"资讯阅读", name:"澎湃新闻", url:"https://www.thepaper.cn",   desc:"深度时政报道" },
+  { cat:"资讯阅读", name:"36氪",     url:"https://36kr.com",          desc:"科技创投资讯" },
+  { cat:"资讯阅读", name:"少数派",   url:"https://sspai.com",         desc:"效率与数字生活" }
+];
+
+/* ==========================================================
+   工具
+   ========================================================== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+  { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+));
+const hostOf = url => {
+  try { return new URL(url).hostname.replace(/^www\./, ''); }
+  catch(e){ return url; }
+};
+const hueOf = s => {
+  let h = 0;
+  for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) % 360;
+  return h;
+};
+
+/* 预处理：补全域名与首字母 */
+const LINKS = RAW_LINKS.map(l => {
+  const domain = hostOf(l.url);
+  const first = (domain[0] || '').toUpperCase();
+  return { ...l, domain, letter: /[A-Z]/.test(first) ? first : '#' };
+});
+
+const state = { cat: 'all', letter: 'all', q: '' };
+
+/* ==========================================================
+   侧边栏渲染
+   ========================================================== */
+function renderCategories(){
+  const counts = {};
+  LINKS.forEach(l => { counts[l.cat] = (counts[l.cat] || 0) + 1; });
+
+  const rows = [`<button class="cat-btn ${state.cat === 'all' ? 'active' : ''}" data-cat="all">
+      <span>全部站点</span><span class="cat-count">${LINKS.length}</span>
+    </button>`];
+
+  CATEGORIES.forEach(cat => {
+    if (!counts[cat]) return;
+    rows.push(`<button class="cat-btn ${state.cat === cat ? 'active' : ''}" data-cat="${esc(cat)}">
+      <span>${esc(cat)}</span><span class="cat-count">${counts[cat]}</span>
+    </button>`);
+  });
+
+  $('catList').innerHTML = rows.join('');
+}
+
+function renderLetters(){
+  const available = new Set(LINKS.map(l => l.letter));
+  const letters = [];
+  for (let i = 65; i <= 90; i++) letters.push(String.fromCharCode(i));
+  if (available.has('#')) letters.push('#');
+
+  $('letterList').innerHTML = letters.map(ch => {
+    const has = available.has(ch);
+    return `<button class="letter-btn ${state.letter === ch ? 'active' : ''}" data-letter="${ch}" ${has ? '' : 'disabled'}>${ch}</button>`;
+  }).join('');
+}
+
+/* ==========================================================
+   主内容渲染
+   ========================================================== */
+function matches(l){
+  if (state.cat !== 'all' && l.cat !== state.cat) return false;
+  if (state.letter !== 'all' && l.letter !== state.letter) return false;
+  if (state.q){
+    const q = state.q.toLowerCase();
+    const hay = `${l.name} ${l.desc} ${l.domain} ${l.cat}`.toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function cardHTML(l, i){
+  const hue = hueOf(l.name);
+  const mono = (l.name[0] || '?').toUpperCase();
+  return `<a class="card" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer"
+      style="--h:${hue};animation-delay:${Math.min(i, 18) * 22}ms" title="${esc(l.name)} · ${esc(l.domain)}">
+      <span class="icon">
+        <span class="mono">${esc(mono)}</span>
+        <img src="https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(l.domain)}" alt="" loading="lazy" onerror="this.remove()">
+      </span>
+      <span class="card-body">
+        <span class="card-name">${esc(l.name)}</span>
+        <span class="card-desc">${esc(l.desc)}</span>
+        <span class="card-domain">${esc(l.domain)}</span>
+      </span>
+      <svg class="card-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>`;
+}
+
+function renderResults(){
+  const box = $('results');
+  const sections = [];
+  let total = 0;
+
+  CATEGORIES.forEach(cat => {
+    if (state.cat !== 'all' && state.cat !== cat) return;
+    const items = LINKS.filter(l => l.cat === cat && matches(l));
+    if (!items.length) return;
+    total += items.length;
+    sections.push(`<section class="group">
+        <div class="group-head">
+          <h2>${esc(cat)}</h2>
+          <span class="group-count">${items.length}</span>
+          <i></i>
+        </div>
+        <div class="grid">${items.map(cardHTML).join('')}</div>
+      </section>`);
+  });
+
+  if (!total){
+    box.innerHTML = `<div class="empty">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
+        <h3>没有找到匹配的站点</h3>
+        <p>换个关键词，或者清除筛选条件再试试。</p>
+        <button id="resetBtn">清除筛选</button>
+      </div>`;
+    const rb = $('resetBtn');
+    if (rb) rb.addEventListener('click', resetFilters);
+    return;
+  }
+
+  box.innerHTML = sections.join('');
+}
+
+function renderAll(){
+  renderCategories();
+  renderLetters();
+  renderResults();
+  $('totalCount').textContent = LINKS.length;
+  $('heroCount').textContent = LINKS.length;
+  $('heroCat').textContent = CATEGORIES.filter(c => LINKS.some(l => l.cat === c)).length;
+}
+
+function resetFilters(){
+  state.cat = 'all';
+  state.letter = 'all';
+  state.q = '';
+  $('q').value = '';
+  renderAll();
+}
+
+/* ==========================================================
+   交互
+   ========================================================== */
+$('catList').addEventListener('click', e => {
+  const btn = e.target.closest('.cat-btn');
+  if (!btn) return;
+  state.cat = btn.dataset.cat;
+  renderAll();
+  closeSidebar();
+});
+
+$('letterList').addEventListener('click', e => {
+  const btn = e.target.closest('.letter-btn');
+  if (!btn || btn.disabled) return;
+  state.letter = state.letter === btn.dataset.letter ? 'all' : btn.dataset.letter;
+  renderAll();
+  closeSidebar();
+});
+
+let searchTimer;
+$('q').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    state.q = e.target.value.trim();
+    renderResults();
+  }, 120);
+});
+
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName || '').toLowerCase();
+  const typing = tag === 'input' || tag === 'textarea';
+  if (e.key === '/' && !typing){
+    e.preventDefault();
+    $('q').focus();
+  }
+  if (e.key === 'Escape'){
+    if (state.q || state.cat !== 'all' || state.letter !== 'all'){
+      resetFilters();
+    } else {
+      $('q').blur();
+    }
+  }
+});
+
+/* 移动端侧边栏 */
+const sidebar = $('sidebar');
+const overlay = $('overlay');
+function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
+function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+$('menuBtn').addEventListener('click', openSidebar);
+overlay.addEventListener('click', closeSidebar);
+
+/* 时钟 */
+function tickClock(){
+  const d = new Date();
+  const p = n => String(n).padStart(2, '0');
+  $('clock').textContent = `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+renderAll();
+</script>
+</body>
+</html>
