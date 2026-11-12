@@ -141,6 +141,7 @@
 
   <div class="box">
     <h3 style="font-size:16px;margin-bottom:10px">🗂 已通过后台发布的内容</h3>
+      <p style="font-size:12.5px;color:#8a7f78;margin-bottom:12px">语音留言在前台“语音墙”录制，这里可以查看并删除。</p>
     <div id="list">正在加载...</div>
   </div>
 </div>
@@ -305,7 +306,7 @@
         box.innerHTML = '<p style="color:#8a7f78;font-size:13.5px">暂未通过后台新增数据（前台目前展示内置初始回忆）</p>';
         return;
       }
-      const typeNames = { photo:'照片', music:'音乐', post:'随笔', timeline:'时光轴' };
+      const typeNames = { photo:'照片', music:'音乐', post:'随笔', timeline:'时光轴', voice:'语音' };
       box.innerHTML = json.data.map(item => `
         <div class="item">
           <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
